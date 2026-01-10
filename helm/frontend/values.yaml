@@ -2,9 +2,15 @@
 replicaCount: 2
 
 image:
-  repository: kind-registry:5000/frontend
+  repository: kind-registry:5002/frontend
   pullPolicy: IfNotPresent
   tag: "v1"
+
+serviceAccount:
+  create: false
+  automount: true
+  annotations: {}
+  name: ""
 
 service:
   type: ClusterIP

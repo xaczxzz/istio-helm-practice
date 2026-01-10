@@ -1,0 +1,18 @@
+dependencies:
+- name: frontend
+  repository: file://../frontend
+  version: 0.1.0
+- name: api-gateway
+  repository: file://../api-gateway
+  version: 0.1.0
+- name: order-service
+  repository: file://../order-service
+  version: 0.1.0
+- name: inventory-service
+  repository: file://../inventory-service
+  version: 0.1.0
+- name: user-service
+  repository: file://../user-service
+  version: 0.1.0
+digest: sha256:554e581af13ab5cac997a6af7b339a1f5cfae862af1ad0f4f13b0e62069b7829
+generated: "2026-01-10T20:50:58.42694+09:00"
