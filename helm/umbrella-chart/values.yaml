@@ -53,12 +53,18 @@ frontend:
   enabled: true
   replicaCount: 2
   image:
-    repository: "kind-registry:5000/frontend"
+    repository: "kind-registry:5002/frontend"
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
     type: ClusterIP
     port: 80
+    # 애가 어떤 역할 하는거지? -> 
+  serviceAccount:
+    create: false
+    automount: true
+    annotations: {}
+    name: ""
   resources:
     requests:
       memory: "64Mi"
@@ -72,12 +78,17 @@ api-gateway:
   enabled: true
   replicaCount: 2
   image:
-    repository: "kind-registry:5000/api-gateway"
+    repository: "kind-registry:5002/api-gateway"
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
     type: ClusterIP
     port: 8000
+  serviceAccount:
+    create: false
+    automount: true
+    annotations: {}
+    name: ""
   env:
     ORDER_SERVICE_URL: "http://order-service:8080"
     INVENTORY_SERVICE_URL: "http://inventory-service:3000"
@@ -95,12 +106,17 @@ order-service:
   enabled: true
   replicaCount: 3
   image:
-    repository: "kind-registry:5000/order-service"
+    repository: "kind-registry:5002/order-service"
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
     type: ClusterIP
     port: 8080
+  serviceAccount:
+    create: false
+    automount: true
+    annotations: {}
+    name: ""
   env:
     DB_HOST: "postgresql"
     DB_PORT: "5432"
@@ -120,12 +136,17 @@ inventory-service:
   enabled: true
   replicaCount: 2
   image:
-    repository: "kind-registry:5000/inventory-service"
+    repository: "kind-registry:5002/inventory-service"
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
     type: ClusterIP
     port: 3000
+  serviceAccount:
+    create: false
+    automount: true
+    annotations: {}
+    name: ""
   env:
     DB_HOST: "postgresql"
     DB_PORT: "5432"
@@ -146,12 +167,17 @@ user-service:
   enabled: true
   replicaCount: 2
   image:
-    repository: "kind-registry:5000/user-service"
+    repository: "kind-registry:5002/user-service"
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
     type: ClusterIP
     port: 8000
+  serviceAccount:
+    create: false
+    automount: true
+    annotations: {}
+    name: ""
   env:
     DB_HOST: "postgresql"
     DB_PORT: "5432"
