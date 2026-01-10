@@ -7,7 +7,7 @@ echo "🚀 Installing ArgoCD..."
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 
 # Install ArgoCD
-# kubectl create namespace argocd
+kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.16/manifests/install.yaml
 
 # Wait for ArgoCD pods to be created
@@ -24,92 +24,6 @@ kubectl patch deployment argocd-server -n argocd --type='json' -p='[
   }
 ]'
 
-# Set resource limits
-kubectl patch deployment argocd-server -n argocd -p '{
-  "spec": {
-    "template": {
-      "spec": {
-        "containers": [{
-          "name": "argocd-server",
-          "resources": {
-            "requests": {
-              "memory": "256Mi",
-              "cpu": "100m"
-            },
-            "limits": {
-              "memory": "512Mi",
-              "cpu": "1000m"
-            }
-          }
-        }]
-      }
-    }
-  }
-}'
-
-# Increase repo-server resources
-kubectl patch deployment argocd-repo-server -n argocd -p '{
-  "spec": {
-    "template": {
-      "spec": {
-        "containers": [{
-          "name": "argocd-repo-server",
-          "resources": {
-            "requests": {
-              "memory": "512Mi",
-              "cpu": "250m"
-            },
-            "limits": {
-              "memory": "1Gi",
-              "cpu": "1000m"
-            }
-          }
-        }]
-      }
-    }
-  }
-}'
-
-# Increase application-controller resources
-kubectl patch statefulset argocd-application-controller -n argocd -p '{
-  "spec": {
-    "template": {
-      "spec": {
-        "containers": [{
-          "name": "argocd-application-controller",
-          "resources": {
-            "requests": {
-              "memory": "512Mi",
-              "cpu": "250m"
-            },
-            "limits": {
-              "memory": "1Gi",
-              "cpu": "1000m"
-            }
-          }
-        }]
-      }
-    }
-  }
-}'
-
-# Disable unnecessary components (optional but recommended for local dev)
-echo "Disabling optional components..."
-kubectl scale deployment argocd-notifications-controller -n argocd --replicas=0
-kubectl scale deployment argocd-dex-server -n argocd --replicas=0
-kubectl scale deployment argocd-applicationset-controller -n argocd --replicas=0
-
-# Wait for ArgoCD to be ready
-echo "Waiting for ArgoCD to be ready..."
-kubectl wait --for=condition=ready pod \
-    -l app.kubernetes.io/name=argocd-server \
-    -n argocd \
-    --timeout=300s
-
-kubectl wait --for=condition=ready pod \
-    -l app.kubernetes.io/name=argocd-repo-server \
-    -n argocd \
-    --timeout=300s
 
 # Get ArgoCD admin password
 echo ""
