@@ -14,6 +14,17 @@ Create a default fully qualified app name.
 {{- end }}
 
 {{/*
+Create the name of the service account to use
+*/}}
+{{- define "inventory-service.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "inventory-service.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
 Common labels
 */}}
 {{- define "inventory-service.labels" -}}
