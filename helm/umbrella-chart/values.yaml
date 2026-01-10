@@ -47,6 +47,13 @@ frontend:
     name: ""
   httpRoute:
     enabled: false
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+  ingress:
+    enabled: false
   resources:
     requests:
       memory: "64Mi"
@@ -73,6 +80,15 @@ api-gateway:
     automount: true
     annotations: {}
     name: ""
+  httpRoute:
+    enabled: false
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+  ingress:
+    enabled: false
   env:
     ORDER_SERVICE_URL: "http://order-service:8080"
     INVENTORY_SERVICE_URL: "http://inventory-service:3000"
@@ -103,6 +119,15 @@ order-service:
     automount: true
     annotations: {}
     name: ""
+  httpRoute:
+    enabled: false
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+  ingress:
+    enabled: false
   env:
     DB_HOST: "postgresql"
     DB_PORT: "5432"

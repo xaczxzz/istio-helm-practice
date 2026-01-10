@@ -1,23 +1,16 @@
-# helm/frontend/values.yaml
 replicaCount: 2
 
 image:
-  repository: kind-registry:5002/frontend
+  repository: kind-registry:5000/frontend
   pullPolicy: IfNotPresent
   tag: "v1"
-
-serviceAccount:
-  create: false
-  automount: true
-  annotations: {}
-  name: ""
-
-httpRoute:
-  enabled: false
 
 service:
   type: ClusterIP
   port: 80
+
+serviceAccount:
+  name: ""
 
 resources:
   requests:
@@ -26,3 +19,8 @@ resources:
   limits:
     memory: "128Mi"
     cpu: "200m"
+
+autoscaling:
+  enabled: false
+
+env: {}
