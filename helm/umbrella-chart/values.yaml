@@ -23,43 +23,23 @@ global:
       enabled: true
       sampling: 100.0
 
-# PostgreSQL configuration
+# PostgreSQL configuration (ArgoCD로 별도 관리하므로 비활성화)
 postgresql:
   enabled: true
-  auth:
-    postgresPassword: "postgres"
-    username: "postgres"
-    password: "postgres"
-    database: "postgres"
-  primary:
-    persistence:
-      enabled: false
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "250m"
-      limits:
-        memory: "512Mi"
-        cpu: "1000m"
-    initdb:
-      scripts:
-        init.sql: |
-          CREATE DATABASE order_db;
-          CREATE DATABASE inventory_db;
-          CREATE DATABASE user_db;
 
 # Frontend configuration
 frontend:
   enabled: true
   replicaCount: 2
   image:
-    repository: "kind-registry:5002/frontend"
+    repository: "kind-registry:5000/frontend"  # ✅ 수정
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
     type: ClusterIP
     port: 80
-    # 애가 어떤 역할 하는거지? -> 
+  ingress:
+    enabled: false  # ✅ 추가
   serviceAccount:
     create: false
     automount: true
@@ -78,12 +58,14 @@ api-gateway:
   enabled: true
   replicaCount: 2
   image:
-    repository: "kind-registry:5002/api-gateway"
+    repository: "kind-registry:5000/api-gateway"  # ✅ 수정
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
     type: ClusterIP
     port: 8000
+  ingress:
+    enabled: false  # ✅ 추가
   serviceAccount:
     create: false
     automount: true
@@ -106,12 +88,14 @@ order-service:
   enabled: true
   replicaCount: 3
   image:
-    repository: "kind-registry:5002/order-service"
+    repository: "kind-registry:5000/order-service"  # ✅ 수정
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
     type: ClusterIP
     port: 8080
+  ingress:
+    enabled: false  # ✅ 추가
   serviceAccount:
     create: false
     automount: true
@@ -136,12 +120,14 @@ inventory-service:
   enabled: true
   replicaCount: 2
   image:
-    repository: "kind-registry:5002/inventory-service"
+    repository: "kind-registry:5000/inventory-service"  # ✅ 수정
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
     type: ClusterIP
     port: 3000
+  ingress:
+    enabled: false  # ✅ 추가
   serviceAccount:
     create: false
     automount: true
@@ -167,12 +153,14 @@ user-service:
   enabled: true
   replicaCount: 2
   image:
-    repository: "kind-registry:5002/user-service"
+    repository: "kind-registry:5000/user-service"  # ✅ 수정
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
     type: ClusterIP
     port: 8000
+  ingress:
+    enabled: false  # ✅ 추가
   serviceAccount:
     create: false
     automount: true
