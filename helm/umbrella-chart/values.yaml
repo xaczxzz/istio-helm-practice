@@ -45,6 +45,8 @@ frontend:
     automount: true
     annotations: {}
     name: ""
+  httpRoute:
+    enabled: false
   resources:
     requests:
       memory: "64Mi"

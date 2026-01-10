@@ -12,6 +12,9 @@ serviceAccount:
   annotations: {}
   name: ""
 
+httpRoute:
+  enabled: false
+
 service:
   type: ClusterIP
   port: 80
