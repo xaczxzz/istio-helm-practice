@@ -1,7 +1,7 @@
 # Default values for k8s-3tier-app umbrella chart
 
 global:
-  registry: "localhost:5002"
+  registry: "kind-registry:5000" 
   imageTag: "v1"
   imagePullPolicy: "IfNotPresent"
   
@@ -44,16 +44,16 @@ postgresql:
     initdb:
       scripts:
         init.sql: |
-          CREATE DATABASE IF NOT EXISTS order_db;
-          CREATE DATABASE IF NOT EXISTS inventory_db;
-          CREATE DATABASE IF NOT EXISTS user_db;
+          CREATE DATABASE order_db;
+          CREATE DATABASE inventory_db;
+          CREATE DATABASE user_db;
 
 # Frontend configuration
 frontend:
   enabled: true
   replicaCount: 2
   image:
-    repository: "localhost:5002/frontend"
+    repository: "kind-registry:5000/frontend"
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
@@ -72,7 +72,7 @@ api-gateway:
   enabled: true
   replicaCount: 2
   image:
-    repository: "localhost:5002/api-gateway"
+    repository: "kind-registry:5000/api-gateway"
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
@@ -95,7 +95,7 @@ order-service:
   enabled: true
   replicaCount: 3
   image:
-    repository: "localhost:5002/order-service"
+    repository: "kind-registry:5000/order-service"
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
@@ -120,7 +120,7 @@ inventory-service:
   enabled: true
   replicaCount: 2
   image:
-    repository: "localhost:5002/inventory-service"
+    repository: "kind-registry:5000/inventory-service"
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
@@ -146,7 +146,7 @@ user-service:
   enabled: true
   replicaCount: 2
   image:
-    repository: "localhost:5002/user-service"
+    repository: "kind-registry:5000/user-service"
     tag: "v1"
     pullPolicy: "IfNotPresent"
   service:
