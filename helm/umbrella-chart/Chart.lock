@@ -1,0 +1,21 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 12.12.10
+- name: frontend
+  repository: file://../frontend
+  version: 0.1.0
+- name: api-gateway
+  repository: file://../api-gateway
+  version: 0.1.0
+- name: order-service
+  repository: file://../order-service
+  version: 0.1.0
+- name: inventory-service
+  repository: file://../inventory-service
+  version: 0.1.0
+- name: user-service
+  repository: file://../user-service
+  version: 0.1.0
+digest: sha256:8baa43d85cf17d68a8982c8b747692e4718575640c2c1419769f78092463e53d
+generated: "2026-01-10T17:14:41.676615+09:00"
