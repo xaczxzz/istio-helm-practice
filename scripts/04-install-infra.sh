@@ -88,7 +88,15 @@ helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
     --set alertmanager.service.type=ClusterIP
 
 # Wait for Prometheus components
-wait_for_pods "monitoring" "app.kubernetes.io/name=prometheus"
+wait_for_pods "monitoring" "app=kube-prometheus-stack-operator" 300
+
+# Wait for Prometheus instance (StatefulSet이므로 시간이 더 걸릴 수 있음)
+echo "Waiting for Prometheus StatefulSet..."
+kubectl wait --for=jsonpath='{.status.readyReplicas}'=1 \
+    statefulset/prometheus-prometheus-kube-prometheus-prometheus \
+    -n monitoring --timeout=600s || true
+
+# Wait for Grafana
 wait_for_pods "monitoring" "app.kubernetes.io/name=grafana"
 
 echo "✅ Prometheus Stack installed successfully"
