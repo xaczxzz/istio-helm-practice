@@ -1,15 +1,17 @@
-# Main application umbrella chart
+# argocd/applications/02-app-stack.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: app-stack
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"  # DB 다음
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-username/k8s-3tier-observability.git
+    repoURL: https://github.com/xaczxzz/istio-helm-practice.git
     targetRevision: main
     path: helm/umbrella-chart
     helm:

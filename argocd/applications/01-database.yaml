@@ -1,0 +1,48 @@
+# argocd/applications/01-database.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgresql
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"  # infra 다음
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 12.x.x
+    chart: postgresql
+    helm:
+      values: |
+        auth:
+          postgresPassword: "postgres"
+          username: "postgres"
+          password: "postgres"
+          database: "postgres"
+        primary:
+          persistence:
+            enabled: false
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
+          initdb:
+            scripts:
+              init.sql: |
+                CREATE DATABASE order_db;
+                CREATE DATABASE inventory_db;
+                CREATE DATABASE user_db;
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

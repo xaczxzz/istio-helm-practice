@@ -1,4 +1,4 @@
-# App of Apps pattern - manages all applications
+# argocd/applications/app-of-apps.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -21,3 +21,13 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
+
+## 배포 순서 (Sync Waves)
+## Wave 0:  Istio Base
+## Wave 1:  Istiod
+## Wave 2:  Istio Gateway
+## Wave 3:  Monitoring Stack
+## Wave 10: PostgreSQL
+## Wave 20: Application Stack
+
