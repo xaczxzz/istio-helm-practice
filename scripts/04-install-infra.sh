@@ -7,7 +7,7 @@ echo "🚀 Installing ArgoCD..."
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 
 # Install ArgoCD
-kubectl create namespace argocd
+# kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.16/manifests/install.yaml
 
 # Wait for ArgoCD pods to be created
