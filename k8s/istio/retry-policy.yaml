@@ -1,0 +1,52 @@
+# Retry policies for services
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: order-service-retry
+  namespace: default
+spec:
+  hosts:
+  - order-service
+  http:
+  - route:
+    - destination:
+        host: order-service
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+      retryOn: 5xx,reset,connect-failure,refused-stream
+      retryRemoteLocalities: true
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: inventory-service-retry
+  namespace: default
+spec:
+  hosts:
+  - inventory-service
+  http:
+  - route:
+    - destination:
+        host: inventory-service
+    retries:
+      attempts: 3
+      perTryTimeout: 5s
+      retryOn: 5xx,reset,connect-failure,refused-stream
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: user-service-retry
+  namespace: default
+spec:
+  hosts:
+  - user-service
+  http:
+  - route:
+    - destination:
+        host: user-service
+    retries:
+      attempts: 2
+      perTryTimeout: 3s
+      retryOn: 5xx,reset,connect-failure,refused-stream

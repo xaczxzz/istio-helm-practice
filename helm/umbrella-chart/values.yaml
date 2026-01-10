@@ -1,0 +1,168 @@
+# Default values for k8s-3tier-app umbrella chart
+
+global:
+  registry: "localhost:5002"
+  imageTag: "v1"
+  imagePullPolicy: "IfNotPresent"
+  
+  # Database configuration
+  database:
+    host: "postgresql"
+    port: 5432
+    username: "postgres"
+    password: "postgres"
+  
+  # Observability configuration
+  observability:
+    jaeger:
+      endpoint: "jaeger"
+      port: 6831
+    prometheus:
+      enabled: true
+    tracing:
+      enabled: true
+      sampling: 100.0
+
+# PostgreSQL configuration
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "postgres"
+    username: "postgres"
+    password: "postgres"
+    database: "postgres"
+  primary:
+    persistence:
+      enabled: false
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "1000m"
+    initdb:
+      scripts:
+        init.sql: |
+          CREATE DATABASE IF NOT EXISTS order_db;
+          CREATE DATABASE IF NOT EXISTS inventory_db;
+          CREATE DATABASE IF NOT EXISTS user_db;
+
+# Frontend configuration
+frontend:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: "localhost:5002/frontend"
+    tag: "v1"
+    pullPolicy: "IfNotPresent"
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "200m"
+
+# API Gateway configuration
+api-gateway:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: "localhost:5002/api-gateway"
+    tag: "v1"
+    pullPolicy: "IfNotPresent"
+  service:
+    type: ClusterIP
+    port: 8000
+  env:
+    ORDER_SERVICE_URL: "http://order-service:8080"
+    INVENTORY_SERVICE_URL: "http://inventory-service:3000"
+    USER_SERVICE_URL: "http://user-service:8000"
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+
+# Order Service configuration
+order-service:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: "localhost:5002/order-service"
+    tag: "v1"
+    pullPolicy: "IfNotPresent"
+  service:
+    type: ClusterIP
+    port: 8080
+  env:
+    DB_HOST: "postgresql"
+    DB_PORT: "5432"
+    DB_NAME: "postgres"
+    DB_USER: "postgres"
+    DB_PASSWORD: "postgres"
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+
+# Inventory Service configuration
+inventory-service:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: "localhost:5002/inventory-service"
+    tag: "v1"
+    pullPolicy: "IfNotPresent"
+  service:
+    type: ClusterIP
+    port: 3000
+  env:
+    DB_HOST: "postgresql"
+    DB_PORT: "5432"
+    DB_NAME: "postgres"
+    DB_USER: "postgres"
+    DB_PASSWORD: "postgres"
+    SERVICE_VERSION: "v1.0.0"
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+
+# User Service configuration
+user-service:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: "localhost:5002/user-service"
+    tag: "v1"
+    pullPolicy: "IfNotPresent"
+  service:
+    type: ClusterIP
+    port: 8000
+  env:
+    DB_HOST: "postgresql"
+    DB_PORT: "5432"
+    DB_NAME: "postgres"
+    DB_USER: "postgres"
+    DB_PASSWORD: "postgres"
+    SERVICE_VERSION: "v1.0.0"
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"

@@ -1,0 +1,66 @@
+# Blue/Green deployment values for user service
+# Use with: helm upgrade app-stack ./helm/umbrella-chart -f values-bluegreen.yaml
+
+# Override user service for blue/green deployment
+user-service:
+  enabled: true
+  
+  # Blue/Green deployment configuration
+  bluegreen:
+    enabled: true
+    activeColor: "blue"  # Change to "green" to switch traffic
+    
+  # Blue version (current production)
+  blue:
+    image:
+      repository: "localhost:5002/user-service"
+      tag: "v1"
+    replicaCount: 2
+    
+  # Green version (new version)
+  green:
+    image:
+      repository: "localhost:5002/user-service"
+      tag: "v2"
+    replicaCount: 2
+
+# Istio configuration for blue/green deployment
+istio:
+  virtualService:
+    user:
+      bluegreen:
+        enabled: true
+        activeColor: "blue"  # Change to "green" to switch traffic
+        routes:
+          - route:
+              - destination:
+                  host: user-service
+                  subset: blue
+                weight: 100
+          # Uncomment below and comment above to switch to green
+          # - route:
+          #     - destination:
+          #         host: user-service
+          #         subset: green
+          #       weight: 100
+
+  destinationRule:
+    user:
+      subsets:
+        - name: blue
+          labels:
+            version: v1
+            color: blue
+        - name: green
+          labels:
+            version: v2
+            color: green
+
+# Test configuration for green environment
+test:
+  enabled: true
+  target: "green"
+  endpoints:
+    - "/users"
+    - "/users/1"
+  expectedStatus: 200

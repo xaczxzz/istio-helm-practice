@@ -1,0 +1,27 @@
+# Istio configuration application
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-config
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-username/k8s-3tier-observability.git
+    targetRevision: main
+    path: k8s/istio
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  # Sync waves to ensure proper order
+  syncPolicy:
+    syncOptions:
+      - ApplyOutOfSyncOnly=true

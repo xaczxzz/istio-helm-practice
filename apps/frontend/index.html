@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K8s 3-Tier Observability Lab</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 K8s 3-Tier Observability Lab</h1>
+            <p>Kubernetes 학습을 위한 실전형 3-tier 애플리케이션</p>
+        </header>
+
+        <div class="dashboard">
+            <!-- Service Status -->
+            <div class="card">
+                <h2>📊 Service Status</h2>
+                <div class="service-grid">
+                    <div class="service-item" id="frontend-status">
+                        <span class="service-name">Frontend</span>
+                        <span class="status-indicator" id="frontend-indicator">●</span>
+                    </div>
+                    <div class="service-item" id="api-gateway-status">
+                        <span class="service-name">API Gateway</span>
+                        <span class="status-indicator" id="api-gateway-indicator">●</span>
+                    </div>
+                    <div class="service-item" id="order-service-status">
+                        <span class="service-name">Order Service</span>
+                        <span class="status-indicator" id="order-indicator">●</span>
+                    </div>
+                    <div class="service-item" id="inventory-service-status">
+                        <span class="service-name">Inventory Service</span>
+                        <span class="status-indicator" id="inventory-indicator">●</span>
+                    </div>
+                    <div class="service-item" id="user-service-status">
+                        <span class="service-name">User Service</span>
+                        <span class="status-indicator" id="user-indicator">●</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Test Buttons -->
+            <div class="card">
+                <h2>🔧 API Test</h2>
+                <div class="button-grid">
+                    <button onclick="testAPI('/api/health')" class="btn btn-primary">Health Check</button>
+                    <button onclick="testAPI('/api/orders')" class="btn btn-secondary">Get Orders</button>
+                    <button onclick="createOrder()" class="btn btn-success">Create Order</button>
+                    <button onclick="testAPI('/api/inventory')" class="btn btn-info">Check Inventory</button>
+                    <button onclick="testAPI('/api/users')" class="btn btn-warning">Get Users</button>
+                </div>
+            </div>
+
+            <!-- Traffic Visualization -->
+            <div class="card">
+                <h2>🌐 Traffic Flow</h2>
+                <div class="traffic-flow">
+                    <div class="flow-item">
+                        <div class="node frontend-node">Frontend</div>
+                        <div class="arrow">→</div>
+                        <div class="node gateway-node">API Gateway</div>
+                        <div class="arrow">→</div>
+                        <div class="node service-node">Services</div>
+                    </div>
+                    <div class="pod-routing" id="pod-routing">
+                        <p>Pod Routing: <span id="current-pod">-</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics -->
+            <div class="card">
+                <h2>📈 Real-time Metrics</h2>
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <span class="metric-label">Response Time</span>
+                        <span class="metric-value" id="response-time">-</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Success Rate</span>
+                        <span class="metric-value" id="success-rate">-</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Requests/sec</span>
+                        <span class="metric-value" id="rps">-</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Error Rate</span>
+                        <span class="metric-value" id="error-rate">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Response Log -->
+            <div class="card">
+                <h2>📝 Response Log</h2>
+                <div class="log-container" id="response-log">
+                    <p class="log-entry">Ready to test APIs...</p>
+                </div>
+                <button onclick="clearLog()" class="btn btn-outline">Clear Log</button>
+            </div>
+        </div>
+
+        <!-- Monitoring Links -->
+        <div class="monitoring-links">
+            <h3>🔍 Monitoring Tools</h3>
+            <div class="link-grid">
+                <a href="/grafana" target="_blank" class="monitoring-link">
+                    <span class="link-icon">📊</span>
+                    <span>Grafana</span>
+                </a>
+                <a href="/kiali" target="_blank" class="monitoring-link">
+                    <span class="link-icon">🕸️</span>
+                    <span>Kiali</span>
+                </a>
+                <a href="/jaeger" target="_blank" class="monitoring-link">
+                    <span class="link-icon">🔍</span>
+                    <span>Jaeger</span>
+                </a>
+                <a href="/argocd" target="_blank" class="monitoring-link">
+                    <span class="link-icon">🚀</span>
+                    <span>ArgoCD</span>
+                </a>
+                <a href="/prometheus" target="_blank" class="monitoring-link">
+                    <span class="link-icon">🔥</span>
+                    <span>Prometheus</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

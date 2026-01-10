@@ -1,0 +1,63 @@
+# ServiceMonitor for Istio components
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istio-component-monitor
+  namespace: monitoring
+  labels:
+    app: istio-proxy
+spec:
+  selector:
+    matchLabels:
+      app: istiod
+  namespaceSelector:
+    matchNames:
+    - istio-system
+  endpoints:
+  - port: http-monitoring
+    interval: 15s
+    path: /stats/prometheus
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istio-mesh-monitor
+  namespace: monitoring
+  labels:
+    app: istio-proxy
+spec:
+  selector:
+    matchExpressions:
+    - key: app
+      operator: Exists
+  namespaceSelector:
+    matchNames:
+    - default
+  endpoints:
+  - port: http-envoy-prom
+    interval: 15s
+    path: /stats/prometheus
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_name]
+      targetLabel: pod_name
+    - sourceLabels: [__meta_kubernetes_namespace]
+      targetLabel: namespace
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istio-gateway-monitor
+  namespace: monitoring
+  labels:
+    app: istio-gateway
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  namespaceSelector:
+    matchNames:
+    - istio-system
+  endpoints:
+  - port: http-envoy-prom
+    interval: 15s
+    path: /stats/prometheus

@@ -1,0 +1,70 @@
+# Canary deployment values for inventory service
+# Use with: helm upgrade app-stack ./helm/umbrella-chart -f values-canary.yaml
+
+# Override inventory service for canary deployment
+inventory-service:
+  enabled: true
+  replicaCount: 2
+  
+  # Deploy both v1 and v2 versions
+  canary:
+    enabled: true
+    stableVersion: "v1"
+    canaryVersion: "v2"
+    trafficSplit:
+      stable: 90
+      canary: 10
+  
+  # Stable version (v1)
+  stable:
+    image:
+      repository: "localhost:5002/inventory-service"
+      tag: "v1"
+    replicaCount: 2
+    
+  # Canary version (v2)  
+  canaryDeployment:
+    image:
+      repository: "localhost:5002/inventory-service"
+      tag: "v2"
+    replicaCount: 1
+
+# Istio configuration for canary deployment
+istio:
+  virtualService:
+    inventory:
+      canary:
+        enabled: true
+        routes:
+          - match:
+              - headers:
+                  canary:
+                    exact: "true"
+            route:
+              - destination:
+                  host: inventory-service
+                  subset: v2
+                weight: 10
+              - destination:
+                  host: inventory-service
+                  subset: v1
+                weight: 90
+          - route:
+              - destination:
+                  host: inventory-service
+                  subset: v1
+                weight: 90
+              - destination:
+                  host: inventory-service
+                  subset: v2
+                weight: 10
+
+  destinationRule:
+    inventory:
+      subsets:
+        - name: v1
+          labels:
+            version: v1
+        - name: v2
+          labels:
+            version: v2

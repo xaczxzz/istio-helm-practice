@@ -1,0 +1,49 @@
+apiVersion: v2
+name: k8s-3tier-app
+description: A Helm chart for K8s 3-Tier Observability Lab
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: postgresql
+    version: "12.12.10"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  
+  - name: frontend
+    version: "0.1.0"
+    repository: "file://charts/frontend"
+    condition: frontend.enabled
+  
+  - name: api-gateway
+    version: "0.1.0"
+    repository: "file://charts/api-gateway"
+    condition: api-gateway.enabled
+  
+  - name: order-service
+    version: "0.1.0"
+    repository: "file://charts/order-service"
+    condition: order-service.enabled
+  
+  - name: inventory-service
+    version: "0.1.0"
+    repository: "file://charts/inventory-service"
+    condition: inventory-service.enabled
+  
+  - name: user-service
+    version: "0.1.0"
+    repository: "file://charts/user-service"
+    condition: user-service.enabled
+
+maintainers:
+  - name: K8s Lab Team
+    email: team@k8slab.com
+
+keywords:
+  - kubernetes
+  - microservices
+  - observability
+  - istio
+  - prometheus
+  - grafana

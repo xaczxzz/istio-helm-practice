@@ -1,0 +1,53 @@
+# ArgoCD Helm Values
+# This file customizes the ArgoCD installation
+
+global:
+  image:
+    tag: "v2.9.3"
+
+server:
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: false
+  
+  # Enable insecure mode for easier local development
+  extraArgs:
+    - --insecure
+
+  config:
+    # Add any custom ArgoCD configuration here
+    url: "http://localhost:8080/argocd"
+    
+    # Enable anonymous access for demo purposes
+    # In production, configure proper RBAC
+    accounts.anonymous: "apiKey, login"
+    
+  rbacConfig:
+    # Default policy for anonymous users
+    policy.default: role:readonly
+    policy.csv: |
+      p, role:admin, applications, *, */*, allow
+      p, role:admin, clusters, *, *, allow
+      p, role:admin, repositories, *, *, allow
+      g, argocd-admins, role:admin
+
+# Disable Dex for simplicity in local development
+dex:
+  enabled: false
+
+# Redis configuration
+redis:
+  enabled: true
+
+# Application controller configuration
+controller:
+  replicas: 1
+  
+# Repository server configuration  
+repoServer:
+  replicas: 1
+
+# Notifications controller (optional)
+notifications:
+  enabled: false
