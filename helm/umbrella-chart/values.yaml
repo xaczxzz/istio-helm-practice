@@ -160,6 +160,8 @@ inventory-service:
     automount: true
     annotations: {}
     name: ""
+  httpRoute:
+    enabled: false
   env:
     DB_HOST: "postgresql"
     DB_PORT: "5432"
@@ -193,6 +195,8 @@ user-service:
     automount: true
     annotations: {}
     name: ""
+  httpRoute:
+    enabled: false
   env:
     DB_HOST: "postgresql"
     DB_PORT: "5432"
