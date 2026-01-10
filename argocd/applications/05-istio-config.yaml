@@ -1,11 +1,11 @@
-# argocd/applications/02-app-stack.yaml
+# argocd/applications/05-istio-config.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: app-stack
+  name: istio-config
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "20"  # DB 다음
+    argocd.argoproj.io/sync-wave: "5"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,10 +13,7 @@ spec:
   source:
     repoURL: https://github.com/xaczxzz/istio-helm-practice.git
     targetRevision: main
-    path: helm/umbrella-chart
-    helm:
-      valueFiles:
-        - values.yaml
+    path: k8s/istio
   destination:
     server: https://kubernetes.default.svc
     namespace: default
@@ -26,8 +23,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-  ignoreDifferences:
-    - group: apps
-      kind: Deployment
-      jsonPointers:
-        - /spec/replicas

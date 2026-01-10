@@ -1,4 +1,4 @@
-# argocd/applications/01-database.yaml
+# argocd/applications/10-database.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -12,7 +12,7 @@ spec:
   project: default
   source:
     repoURL: https://charts.bitnami.com/bitnami
-    targetRevision: 12.x.x
+    targetRevision: 12.12.10
     chart: postgresql
     helm:
       values: |
