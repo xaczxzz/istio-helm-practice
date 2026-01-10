@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/your-username/k8s-3tier-observability.git
+    repoURL: https://github.com/xaczxzz/istio-helm-practice.git
     targetRevision: main
     path: argocd/applications
   destination:
