@@ -3,7 +3,7 @@ replicaCount: 2
 image:
   repository: kind-registry:5000/frontend
   pullPolicy: IfNotPresent
-  tag: "v1"
+  tag: "v2"
 
 service:
   type: ClusterIP
@@ -26,4 +26,6 @@ resources:
 autoscaling:
   enabled: false
 
-env: {}
+env:
+  API_GATEWAY_HOST: "app-stack-api-gateway"
+  API_GATEWAY_PORT: "8000"
