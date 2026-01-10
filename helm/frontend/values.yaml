@@ -1,0 +1,19 @@
+# helm/frontend/values.yaml
+replicaCount: 2
+
+image:
+  repository: kind-registry:5000/frontend
+  pullPolicy: IfNotPresent
+  tag: "v1"
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "50m"
+  limits:
+    memory: "128Mi"
+    cpu: "200m"
