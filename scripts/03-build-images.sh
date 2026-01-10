@@ -32,6 +32,10 @@ for service in "${SERVICES[@]}"; do
     echo "✅ ${service} built and pushed"
 done
 
+docker pull postgres:16-alpine
+docker tag postgres:16-alpine localhost:5002/postgres:16-alpine
+docker push localhost:5002/postgres:16-alpine
+
 echo ""
 echo "🎉 All images built successfully!"
 echo ""
