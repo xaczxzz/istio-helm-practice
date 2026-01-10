@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: postgresql
-        image: kind-registry:5000/postgres:16-alpine
+        image: kind-registry:5002/postgres:16-alpine
         imagePullPolicy: Always
         env:
         - name: POSTGRES_DB

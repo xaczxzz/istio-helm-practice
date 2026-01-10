@@ -31,17 +31,21 @@ if [ "$(docker ps -q -f name=${REGISTRY_NAME})" ]; then
     for node in $(kind get nodes --name ${CLUSTER_NAME}); do
         echo "Configuring node: ${node}"
         
-        # containerd 설정 추가
-        docker exec "${node}" sh -c "cat <<EOF >> /etc/containerd/config.toml
-[plugins.\"io.containerd.grpc.v1.cri\".registry]
-  [plugins.\"io.containerd.grpc.v1.cri\".registry.mirrors]
-    [plugins.\"io.containerd.grpc.v1.cri\".registry.mirrors.\"${REGISTRY_NAME}:${REGISTRY_PORT}\"]
-      endpoint = [\"http://${REGISTRY_NAME}:${REGISTRY_PORT}\"]
-  [plugins.\"io.containerd.grpc.v1.cri\".registry.configs]
-    [plugins.\"io.containerd.grpc.v1.cri\".registry.configs.\"${REGISTRY_NAME}:${REGISTRY_PORT}\"]
-      [plugins.\"io.containerd.grpc.v1.cri\".registry.configs.\"${REGISTRY_NAME}:${REGISTRY_PORT}\".tls]
-        insecure_skip_verify = true
-EOF
+        # containerd 설정 생성 (기존 설정 덮어쓰기)
+        docker exec "${node}" sh -c "cat > /etc/containerd/config.toml <<'CONFEOF'
+version = 2
+
+[plugins]
+  [plugins.\"io.containerd.grpc.v1.cri\"]
+    [plugins.\"io.containerd.grpc.v1.cri\".registry]
+      [plugins.\"io.containerd.grpc.v1.cri\".registry.mirrors]
+        [plugins.\"io.containerd.grpc.v1.cri\".registry.mirrors.\"kind-registry:5000\"]
+          endpoint = [\"http://kind-registry:5000\"]
+      [plugins.\"io.containerd.grpc.v1.cri\".registry.configs]
+        [plugins.\"io.containerd.grpc.v1.cri\".registry.configs.\"kind-registry:5000\"]
+          [plugins.\"io.containerd.grpc.v1.cri\".registry.configs.\"kind-registry:5000\".tls]
+            insecure_skip_verify = true
+CONFEOF
 "
         
         # containerd 재시작
