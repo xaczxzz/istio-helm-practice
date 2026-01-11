@@ -2,6 +2,7 @@
 set -e
 
 echo "🚀 Installing ArgoCD..."
+# istio label 붙이기
 kubectl label namespace default istio-injection=enabled
 # Create ArgoCD namespace
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -

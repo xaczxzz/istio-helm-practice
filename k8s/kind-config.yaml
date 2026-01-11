@@ -10,15 +10,15 @@ nodes:
       kubeletExtraArgs:
         node-labels: "ingress-ready=true"
   extraPortMappings:
-  # HTTP
-  - containerPort: 80
+  # Istio HTTP (NodePort 31541 -> Host 80)
+  - containerPort: 31541
     hostPort: 80
     protocol: TCP
-  # HTTPS
-  - containerPort: 443
+  # Istio HTTPS (NodePort 31026 -> Host 443)
+  - containerPort: 31026
     hostPort: 443
     protocol: TCP
-  # Istio Ingress Gateway
+  # Istio Ingress Gateway Status
   - containerPort: 15021
     hostPort: 15021
     protocol: TCP

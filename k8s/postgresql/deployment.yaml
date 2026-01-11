@@ -28,8 +28,8 @@ spec:
     spec:
       containers:
       - name: postgresql
-        image: kind-registry:5000/postgres:16-alpine
-        imagePullPolicy: Always
+        image: postgres:16-alpine
+        imagePullPolicy: IfNotPresent
         env:
         - name: POSTGRES_DB
           value: postgres
