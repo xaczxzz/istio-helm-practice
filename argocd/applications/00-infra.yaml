@@ -55,16 +55,30 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istio-gateway
+  name: istio-ingressgateway
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "2"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     repoURL: https://istio-release.storage.googleapis.com/charts
     targetRevision: 1.20.0
     chart: gateway
+    helm:
+      releaseName: istio-ingressgateway
+      values: |
+        service:
+          type: LoadBalancer
+          ports:
+            - name: http
+              port: 80
+              targetPort: 8080
+            - name: https
+              port: 443
+              targetPort: 8443
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
@@ -113,30 +127,36 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istio-ingress
+  name: jaeger
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "3"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: https://istio-release.storage.googleapis.com/charts
-    targetRevision: 1.20.0
-    chart: gateway
+    repoURL: https://jaegertracing.github.io/helm-charts
+    targetRevision: 0.71.0
+    chart: jaeger
     helm:
-      releaseName: istio-ingressgateway
       values: |
-        service:
-          type: LoadBalancer
-          ports:
-            - name: http
-              port: 80
-              targetPort: 8080
-            - name: https
-              port: 443
-              targetPort: 8443
+        provisionDataStore:
+          cassandra: false
+        allInOne:
+          enabled: true
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+        storage:
+          type: memory
+        agent:
+          enabled: false
+        collector:
+          enabled: false
+        query:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
@@ -144,6 +164,7 @@ spec:
     automated:
       prune: true
       selfHeal: true
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -185,54 +206,13 @@ spec:
     syncOptions:
       - CreateNamespace=true
 ---
-# Jaeger
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: jaeger
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
-spec:
-  project: default
-  source:
-    repoURL: https://jaegertracing.github.io/helm-charts
-    targetRevision: 0.71.0
-    chart: jaeger
-    helm:
-      values: |
-        provisionDataStore:
-          cassandra: false
-        allInOne:
-          enabled: true
-          resources:
-            limits:
-              cpu: 500m
-              memory: 512Mi
-        storage:
-          type: memory
-        agent:
-          enabled: false
-        collector:
-          enabled: false
-        query:
-          enabled: false
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: istio-system
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: istio-config
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "4"
+    argocd.argoproj.io/sync-wave: "5"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:

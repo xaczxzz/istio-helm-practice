@@ -9,7 +9,7 @@ spec:
     istio: ingressgateway
   servers:
   - port:
-      number: 8081
+      number: 80
       name: http
       protocol: HTTP
     hosts:
@@ -26,7 +26,7 @@ spec:
     istio: ingressgateway
   servers:
   - port:
-      number: 80
+      number: 9090
       name: http
       protocol: HTTP
     hosts:
