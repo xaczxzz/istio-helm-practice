@@ -76,9 +76,11 @@ spec:
             - name: http
               port: 80
               targetPort: 8080
+              nodePort: 31541
             - name: https
               port: 443
               targetPort: 8443
+              nodePort: 31026
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
