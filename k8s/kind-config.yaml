@@ -20,6 +20,10 @@ nodes:
   - containerPort: 31543
     hostPort: 8082
     protocol: TCP
+  # Monitoring Gateway (NodePort 31544 -> Host 9090)
+  - containerPort: 31544
+    hostPort: 9090
+    protocol: TCP
   # Istio HTTPS (NodePort 31026 -> Host 443)
   - containerPort: 31026
     hostPort: 443

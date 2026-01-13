@@ -42,8 +42,11 @@ spec:
           autoscaleEnabled: false
           resources:
             requests:
-              cpu: 500m
-              memory: 2048Mi
+              cpu: 1000m
+              memory: 4096Mi
+            limits:
+              cpu: 2000m
+              memory: 8192Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
@@ -87,11 +90,28 @@ spec:
               targetPort: 9090
               nodePort: 31542
               protocol: TCP
+            - name: monitoring
+              port: 9090
+              targetPort: 9090
+              nodePort: 31544
+              protocol: TCP
             - name: https
               port: 443
               targetPort: 8443
               nodePort: 31026
               protocol: TCP
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1024Mi
+          limits:
+            cpu: 1000m
+            memory: 2048Mi
+        autoscaling:
+          enabled: true
+          minReplicas: 2
+          maxReplicas: 5
+          targetCPUUtilizationPercentage: 80
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
@@ -120,12 +140,26 @@ spec:
             serviceMonitorSelectorNilUsesHelmValues: false
             podMonitorSelectorNilUsesHelmValues: false
             retention: 7d
+            resources:
+              requests:
+                cpu: 1000m
+                memory: 4096Mi
+              limits:
+                cpu: 2000m
+                memory: 8192Mi
         grafana:
           adminPassword: admin123
           service:
             type: ClusterIP
           persistence:
             enabled: false
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1024Mi
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
@@ -159,9 +193,12 @@ spec:
         allInOne:
           enabled: true
           resources:
-            limits:
+            requests:
               cpu: 500m
-              memory: 512Mi
+              memory: 1024Mi
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
         storage:
           type: memory
         agent:
@@ -209,6 +246,13 @@ spec:
         deployment:
           ingress:
             enabled: false
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1024Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
