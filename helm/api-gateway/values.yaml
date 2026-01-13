@@ -184,3 +184,7 @@ env:
   USER_SERVICE_URL: "http://app-stack-user-service:8000"
   JAEGER_AGENT_HOST: "jaeger"
   JAEGER_AGENT_PORT: "6831"
+  PROMETHEUS_URL: "http://monitoring-stack-kube-prom-prometheus.monitoring:9090"
+  GRAFANA_URL: "http://monitoring-stack-grafana.monitoring:80"
+  JAEGER_URL: "http://jaeger-query.istio-system:16686"
+  KIALI_URL: "http://kiali.istio-system:20001"
