@@ -9,58 +9,13 @@ spec:
   gateways:
   - app-gateway
   http:
-  # Monitoring routes
-  - match:
-    - uri:
-        prefix: /api/kiali
-    rewrite:
-      uri: /
-    route:
-    - destination:
-        host: kiali.istio-system.svc.cluster.local
-        port:
-          number: 20001
-  
-  - match:
-    - uri:
-        prefix: /api/grafana
-    rewrite:
-      uri: /
-    route:
-    - destination:
-        host: monitoring-stack-grafana.monitoring.svc.cluster.local
-        port:
-          number: 80
-  
-  - match:
-    - uri:
-        prefix: /api/jaeger
-    rewrite:
-      uri: /
-    route:
-    - destination:
-        host: jaeger-query.istio-system.svc.cluster.local
-        port:
-          number: 16686
-  
-  - match:
-    - uri:
-        prefix: /api/prometheus
-    rewrite:
-      uri: /
-    route:
-    - destination:
-        host: monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local
-        port:
-          number: 9090
-  
   # API Gateway routes
   - match:
     - uri:
         prefix: /api/
     route:
     - destination:
-        host: api-gateway
+        host: app-stack-api-gateway
         port:
           number: 8000
   
@@ -70,6 +25,6 @@ spec:
         prefix: /
     route:
     - destination:
-        host: frontend
+        host: app-stack-frontend
         port:
           number: 80

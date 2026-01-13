@@ -1,0 +1,133 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: unified-vs
+  namespace: default
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - app-gateway
+  http:
+  # Monitoring routes (highest priority)
+  - match:
+    - uri:
+        prefix: /api/kiali
+    rewrite:
+      uri: /kiali/
+    route:
+    - destination:
+        host: kiali.istio-system.svc.cluster.local
+        port:
+          number: 20001
+  
+  - match:
+    - uri:
+        prefix: /api/grafana
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: monitoring-stack-grafana.monitoring.svc.cluster.local
+        port:
+          number: 80
+  
+  - match:
+    - uri:
+        prefix: /api/jaeger
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: jaeger-query.istio-system.svc.cluster.local
+        port:
+          number: 16686
+  
+  - match:
+    - uri:
+        prefix: /api/prometheus
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local
+        port:
+          number: 9090
+  
+  # API Gateway specific routes (highest priority for API)
+  - match:
+    - uri:
+        exact: /api/health
+    rewrite:
+      uri: /health
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
+  
+  - match:
+    - uri:
+        exact: /api/metrics
+    rewrite:
+      uri: /metrics
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
+  
+  - match:
+    - uri:
+        prefix: /api/orders
+    rewrite:
+      uri: /orders
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
+  
+  - match:
+    - uri:
+        prefix: /api/users
+    rewrite:
+      uri: /users
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
+  
+  - match:
+    - uri:
+        prefix: /api/inventory
+    rewrite:
+      uri: /inventory
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
+  
+  # API Gateway catch-all (medium priority)
+  - match:
+    - uri:
+        prefix: /api/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
+  
+  # Frontend routes (lowest priority - catch all)
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: app-stack-frontend
+        port:
+          number: 80

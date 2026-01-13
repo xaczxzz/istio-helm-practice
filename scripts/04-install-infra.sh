@@ -31,7 +31,8 @@ kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -
 
 # Apply ArgoCD resource patches
 echo "Applying ArgoCD resource patches..."
-kubectl apply -f k8s/argocd-resource-patches.yaml
+chmod +x k8s/argocd-resource-patches.sh
+./k8s/argocd-resource-patches.sh
 
 
 # Get ArgoCD admin password
