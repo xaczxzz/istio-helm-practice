@@ -159,3 +159,28 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Monitoring services configuration
+monitoring:
+  prometheus:
+    enabled: true
+    url: "http://prometheus:9090"
+  grafana:
+    enabled: true
+    url: "http://grafana:3000"
+  jaeger:
+    enabled: true
+    url: "http://jaeger:16686"
+    agent_host: "jaeger"
+    agent_port: 6831
+  kiali:
+    enabled: true
+    url: "http://kiali.istio-system:20001"
+
+# Environment variables for service discovery
+env:
+  ORDER_SERVICE_URL: "http://app-stack-order-service:8080"
+  INVENTORY_SERVICE_URL: "http://app-stack-inventory-service:3000"
+  USER_SERVICE_URL: "http://app-stack-user-service:8000"
+  JAEGER_AGENT_HOST: "jaeger"
+  JAEGER_AGENT_PORT: "6831"

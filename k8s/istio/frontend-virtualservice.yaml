@@ -25,3 +25,11 @@ spec:
         host: app-stack-frontend
         port:
           number: 80
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: app-stack-grafana
+        port:
+          number: 80

@@ -28,10 +28,12 @@ gateways:
         targetPort: 8080
         name: http2
         protocol: TCP
+        nodePort: 31541
       - port: 443
         targetPort: 8443
         name: https
         protocol: TCP
+        nodePort: 31026
 
 # Telemetry v2 configuration
 telemetry:

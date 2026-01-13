@@ -246,6 +246,42 @@ async def user_service_health():
         logger.error(f"User service health check failed: {e}")
         raise HTTPException(status_code=503, detail="User service unhealthy")
 
+# Monitoring Service routes
+@app.get("/monitoring/prometheus")
+async def prometheus_proxy():
+    """Proxy to Prometheus"""
+    prometheus_url = os.getenv("PROMETHEUS_URL", "http://prometheus:9090")
+    return {"url": prometheus_url, "service": "prometheus"}
+
+@app.get("/monitoring/grafana")
+async def grafana_proxy():
+    """Proxy to Grafana"""
+    grafana_url = os.getenv("GRAFANA_URL", "http://grafana:3000")
+    return {"url": grafana_url, "service": "grafana"}
+
+@app.get("/monitoring/jaeger")
+async def jaeger_proxy():
+    """Proxy to Jaeger"""
+    jaeger_url = os.getenv("JAEGER_URL", "http://jaeger:16686")
+    return {"url": jaeger_url, "service": "jaeger"}
+
+@app.get("/monitoring/kiali")
+async def kiali_proxy():
+    """Proxy to Kiali"""
+    kiali_url = os.getenv("KIALI_URL", "http://kiali.istio-system:20001")
+    return {"url": kiali_url, "service": "kiali"}
+
+@app.get("/monitoring/status")
+async def monitoring_status():
+    """Get monitoring services status"""
+    return {
+        "prometheus": os.getenv("PROMETHEUS_URL", "http://prometheus:9090"),
+        "grafana": os.getenv("GRAFANA_URL", "http://grafana:3000"),
+        "jaeger": os.getenv("JAEGER_URL", "http://jaeger:16686"),
+        "kiali": os.getenv("KIALI_URL", "http://kiali.istio-system:20001"),
+        "metrics_endpoint": "/metrics"
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
