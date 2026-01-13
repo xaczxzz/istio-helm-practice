@@ -44,6 +44,21 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            {{- if .Values.env }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+            - name: PROMETHEUS_URL
+              value: {{ .Values.monitoring.prometheus.url | default "http://prometheus:9090" | quote }}
+            - name: GRAFANA_URL
+              value: {{ .Values.monitoring.grafana.url | default "http://grafana:3000" | quote }}
+            - name: JAEGER_URL
+              value: {{ .Values.monitoring.jaeger.url | default "http://jaeger:16686" | quote }}
+            - name: KIALI_URL
+              value: {{ .Values.monitoring.kiali.url | default "http://kiali.istio-system:20001" | quote }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
