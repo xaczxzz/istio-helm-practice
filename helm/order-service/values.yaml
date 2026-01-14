@@ -3,7 +3,7 @@ replicaCount: 2
 image:
   repository: kind-registry:5000/order-service
   pullPolicy: IfNotPresent
-  tag: "v1"
+  tag: "v2"
 
 service:
   type: ClusterIP

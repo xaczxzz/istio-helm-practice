@@ -35,6 +35,14 @@ spec:
           value: {{ $value | quote }}
         {{- end }}
         {{- end }}
+        startupProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30
         livenessProbe:
           httpGet:
             path: /health

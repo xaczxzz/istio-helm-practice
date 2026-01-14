@@ -61,51 +61,63 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || 'postgres',
   max: 20,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 5000,
 });
 
-// Initialize database
+// Initialize database with retry logic
 async function initDB() {
-  try {
-    const client = await pool.connect();
-    
-    // Create inventory table if not exists
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS inventory (
-        id SERIAL PRIMARY KEY,
-        product_id INTEGER UNIQUE NOT NULL,
-        product_name VARCHAR(255) NOT NULL,
-        quantity INTEGER NOT NULL DEFAULT 0,
-        price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+  const maxRetries = 30;
+  const retryDelay = 2000; // 2 seconds
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const client = await pool.connect();
+      
+      // Create inventory table if not exists
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS inventory (
+          id SERIAL PRIMARY KEY,
+          product_id INTEGER UNIQUE NOT NULL,
+          product_name VARCHAR(255) NOT NULL,
+          quantity INTEGER NOT NULL DEFAULT 0,
+          price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
 
-    // Insert sample data if table is empty
-    const result = await client.query('SELECT COUNT(*) FROM inventory');
-    if (parseInt(result.rows[0].count) === 0) {
-      const sampleData = [
-        [1, 'Laptop', 50, 999.99],
-        [2, 'Mouse', 200, 29.99],
-        [3, 'Keyboard', 150, 79.99],
-        [4, 'Monitor', 75, 299.99],
-        [5, 'Headphones', 100, 149.99],
-      ];
+      // Insert sample data if table is empty
+      const result = await client.query('SELECT COUNT(*) FROM inventory');
+      if (parseInt(result.rows[0].count) === 0) {
+        const sampleData = [
+          [1, 'Laptop', 50, 999.99],
+          [2, 'Mouse', 200, 29.99],
+          [3, 'Keyboard', 150, 79.99],
+          [4, 'Monitor', 75, 299.99],
+          [5, 'Headphones', 100, 149.99],
+        ];
 
-      for (const [id, name, qty, price] of sampleData) {
-        await client.query(
-          'INSERT INTO inventory (product_id, product_name, quantity, price) VALUES ($1, $2, $3, $4)',
-          [id, name, qty, price]
-        );
+        for (const [id, name, qty, price] of sampleData) {
+          await client.query(
+            'INSERT INTO inventory (product_id, product_name, quantity, price) VALUES ($1, $2, $3, $4)',
+            [id, name, qty, price]
+          );
+        }
+        console.log('Sample inventory data inserted');
       }
-      console.log('Sample inventory data inserted');
-    }
 
-    client.release();
-    console.log('Database initialized successfully');
-  } catch (err) {
-    console.error('Database initialization failed:', err);
-    process.exit(1);
+      client.release();
+      console.log(`Database initialized successfully (attempt ${attempt})`);
+      return;
+    } catch (err) {
+      console.error(`Attempt ${attempt}/${maxRetries}: Database initialization failed:`, err.message);
+      if (attempt < maxRetries) {
+        console.log(`Retrying in ${retryDelay / 1000} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      } else {
+        console.error('Failed to initialize database after all retries');
+        process.exit(1);
+      }
+    }
   }
 }
 

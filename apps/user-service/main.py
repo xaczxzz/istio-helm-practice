@@ -50,8 +50,22 @@ db_connection = None
 
 def get_db_connection():
     global db_connection
+    max_retries = 30
+    retry_delay = 2
+    
     if db_connection is None or db_connection.closed:
-        db_connection = psycopg2.connect(**DB_CONFIG)
+        for attempt in range(max_retries):
+            try:
+                db_connection = psycopg2.connect(**DB_CONFIG)
+                logger.info(f"Database connection established (attempt {attempt + 1})")
+                return db_connection
+            except psycopg2.OperationalError as e:
+                if attempt < max_retries - 1:
+                    logger.warning(f"Attempt {attempt + 1}/{max_retries}: Failed to connect to database: {e}")
+                    time.sleep(retry_delay)
+                else:
+                    logger.error(f"Failed to connect to database after {max_retries} attempts")
+                    raise
     return db_connection
 
 async def init_db():

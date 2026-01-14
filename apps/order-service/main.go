@@ -115,14 +115,38 @@ func initDB() {
 		dbHost, dbPort, dbUser, dbPassword, dbName)
 
 	var err error
-	db, err = sql.Open("postgres", connStr)
-	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
-	}
+	
+	// Retry logic for database connection
+	maxRetries := 30
+	retryDelay := 2 * time.Second
+	
+	for i := 0; i < maxRetries; i++ {
+		db, err = sql.Open("postgres", connStr)
+		if err != nil {
+			log.Printf("Attempt %d/%d: Failed to open database connection: %v", i+1, maxRetries, err)
+			time.Sleep(retryDelay)
+			continue
+		}
 
-	// Test connection
-	if err = db.Ping(); err != nil {
-		log.Fatal("Failed to ping database:", err)
+		// Set connection pool settings
+		db.SetMaxOpenConns(25)
+		db.SetMaxIdleConns(5)
+		db.SetConnMaxLifetime(5 * time.Minute)
+
+		// Test connection
+		err = db.Ping()
+		if err == nil {
+			log.Println("Database connection established successfully")
+			break
+		}
+		
+		log.Printf("Attempt %d/%d: Failed to ping database: %v", i+1, maxRetries, err)
+		db.Close()
+		time.Sleep(retryDelay)
+	}
+	
+	if err != nil {
+		log.Fatal("Failed to connect to database after retries:", err)
 	}
 
 	// Create orders table if not exists
@@ -140,7 +164,7 @@ func initDB() {
 		log.Fatal("Failed to create orders table:", err)
 	}
 
-	log.Println("Database connection established")
+	log.Println("Database initialized successfully")
 }
 
 func prometheusMiddleware() gin.HandlerFunc {
