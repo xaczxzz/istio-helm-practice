@@ -24,8 +24,6 @@ spec:
   - match:
     - uri:
         prefix: /api/kiali
-    rewrite:
-      uri: /kiali/
     route:
     - destination:
         host: kiali.istio-system.svc.cluster.local
@@ -35,8 +33,6 @@ spec:
   - match:
     - uri:
         prefix: /api/grafana
-    rewrite:
-      uri: /
     route:
     - destination:
         host: monitoring-stack-grafana.monitoring.svc.cluster.local
@@ -46,8 +42,6 @@ spec:
   - match:
     - uri:
         prefix: /api/jaeger
-    rewrite:
-      uri: /
     route:
     - destination:
         host: jaeger-query.istio-system.svc.cluster.local
@@ -57,8 +51,6 @@ spec:
   - match:
     - uri:
         prefix: /api/prometheus
-    rewrite:
-      uri: /
     route:
     - destination:
         host: monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local
