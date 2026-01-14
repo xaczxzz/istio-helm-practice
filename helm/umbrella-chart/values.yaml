@@ -89,10 +89,17 @@ api-gateway:
     targetCPUUtilizationPercentage: 80
   ingress:
     enabled: false
-  env:
-    ORDER_SERVICE_URL: "http://order-service:8080"
-    INVENTORY_SERVICE_URL: "http://inventory-service:3000"
-    USER_SERVICE_URL: "http://user-service:8000"
+  env:  # ✅ 이거 추가
+    ORDER_SERVICE_URL: "http://app-stack-order-service:8080"
+    INVENTORY_SERVICE_URL: "http://app-stack-inventory-service:3000"
+    USER_SERVICE_URL: "http://app-stack-user-service:8000"
+    JAEGER_AGENT_HOST: "jaeger"
+    JAEGER_AGENT_PORT: "6831"
+    PROMETHEUS_URL: "http://monitoring-stack-kube-prom-prometheus.monitoring:9090"
+    GRAFANA_URL: "http://monitoring-stack-grafana.monitoring:80"
+    JAEGER_URL: "http://jaeger-query.istio-system:16686"
+    KIALI_URL: "http://kiali.istio-system:20001"
+    
   resources:
     requests:
       memory: "128Mi"
