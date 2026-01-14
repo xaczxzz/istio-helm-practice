@@ -192,6 +192,8 @@ spec:
           cassandra: false
         allInOne:
           enabled: true
+          args:  # ← 추가
+            - "--query.base-path=/jaeger"
           resources:
             requests:
               cpu: 500m
