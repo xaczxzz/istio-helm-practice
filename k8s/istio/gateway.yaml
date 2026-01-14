@@ -1,4 +1,5 @@
-# Istio Gateway for the application
+# monitoring-gateway 삭제
+# app-gateway만 남기기
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
@@ -10,23 +11,6 @@ spec:
   servers:
   - port:
       number: 80
-      name: http
-      protocol: HTTP
-    hosts:
-    - "*"
----
-# Gateway for monitoring tools
-apiVersion: networking.istio.io/v1beta1
-kind: Gateway
-metadata:
-  name: monitoring-gateway
-  namespace: istio-system
-spec:
-  selector:
-    istio: ingressgateway
-  servers:
-  - port:
-      number: 9090
       name: http
       protocol: HTTP
     hosts:

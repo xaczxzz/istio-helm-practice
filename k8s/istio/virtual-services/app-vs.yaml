@@ -9,7 +9,46 @@ spec:
   gateways:
   - app-gateway
   http:
-  # API Gateway routes
+  # Monitoring routes (구체적인 경로 먼저)
+  - match:
+    - uri:
+        prefix: /grafana
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: prometheus-grafana.monitoring.svc.cluster.local
+        port:
+          number: 80
+  
+  - match:
+    - uri:
+        prefix: /kiali
+    route:
+    - destination:
+        host: kiali.istio-system.svc.cluster.local
+        port:
+          number: 20001
+  
+  - match:
+    - uri:
+        prefix: /jaeger
+    route:
+    - destination:
+        host: jaeger-query.istio-system.svc.cluster.local
+        port:
+          number: 16686
+  
+  - match:
+    - uri:
+        prefix: /prometheus
+    route:
+    - destination:
+        host: prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local
+        port:
+          number: 9090
+  
+  # API routes
   - match:
     - uri:
         prefix: /api/
@@ -19,7 +58,7 @@ spec:
         port:
           number: 8000
   
-  # Frontend routes (catch-all)
+  # Frontend (catch-all)
   - match:
     - uri:
         prefix: /
