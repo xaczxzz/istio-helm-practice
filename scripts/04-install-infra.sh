@@ -29,10 +29,10 @@ kubectl patch deployment argocd-server -n argocd --type='json' -p='[
 echo "Waiting for ArgoCD to be ready..."
 kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
 
-# Apply ArgoCD resource patches
-echo "Applying ArgoCD resource patches..."
-chmod +x k8s/argocd-resource-patches.sh
-./k8s/argocd-resource-patches.sh
+# # Apply ArgoCD resource patches
+# echo "Applying ArgoCD resource patches..."
+# chmod +x k8s/argocd-resource-patches.sh
+# ./k8s/argocd-resource-patches.sh
 
 
 # Get ArgoCD admin password
