@@ -9,6 +9,14 @@ spec:
   gateways:
   - app-gateway
   http:
+  - match:
+    - uri:
+        prefix: /argocd
+    route:
+    - destination:
+        host: argocd-server.argocd.svc.cluster.local
+        port:
+          number: 80
   # Monitoring routes (구체적인 경로 먼저)
   - match:
     - uri:

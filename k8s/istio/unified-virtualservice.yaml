@@ -12,6 +12,17 @@ spec:
   # Monitoring routes (highest priority)
   - match:
     - uri:
+        prefix: /api/argocd
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: argocd-server.argocd.svc.cluster.local
+        port:
+          number: 80
+  
+  - match:
+    - uri:
         prefix: /api/kiali
     rewrite:
       uri: /kiali/
