@@ -302,7 +302,7 @@ async def grafana_proxy(request: Request, path: str = ""):
 async def jaeger_proxy(request: Request, path: str = ""):
     """Proxy to Jaeger"""
     jaeger_url = os.getenv("JAEGER_URL", "http://jaeger-query.istio-system:16686")
-    target_url = f"{jaeger_url}/{path}"
+    target_url = f"{jaeger_url}/jaeger/{path}"
     
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
@@ -327,7 +327,7 @@ async def jaeger_proxy(request: Request, path: str = ""):
 async def kiali_proxy(request: Request, path: str = ""):
     """Proxy to Kiali"""
     kiali_url = os.getenv("KIALI_URL", "http://kiali.istio-system:20001")
-    target_url = f"{kiali_url}/{path}"
+    target_url = f"{kiali_url}/kiali/{path}"
     
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
