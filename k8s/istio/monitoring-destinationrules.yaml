@@ -1,0 +1,43 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: kiali
+  namespace: istio-system
+spec:
+  host: kiali.istio-system.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: jaeger
+  namespace: istio-system
+spec:
+  host: jaeger-query.istio-system.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  host: monitoring-stack-grafana.monitoring.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  host: monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
