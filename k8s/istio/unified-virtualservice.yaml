@@ -12,6 +12,15 @@ spec:
   # Monitoring routes via API Gateway (highest priority)
   - match:
     - uri:
+        prefix: /monitoring/
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
+  
+  - match:
+    - uri:
         prefix: /api/monitoring/
     rewrite:
       uri: /monitoring/
