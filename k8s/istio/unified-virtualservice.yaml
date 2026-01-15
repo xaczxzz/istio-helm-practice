@@ -9,7 +9,19 @@ spec:
   gateways:
   - app-gateway
   http:
-  # Monitoring routes (highest priority)
+  # Monitoring routes via API Gateway (highest priority)
+  - match:
+    - uri:
+        prefix: /api/monitoring/
+    rewrite:
+      uri: /monitoring/
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
+  
+  # Direct monitoring routes (fallback)
   - match:
     - uri:
         prefix: /api/argocd

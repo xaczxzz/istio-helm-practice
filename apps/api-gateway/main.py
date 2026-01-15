@@ -246,41 +246,137 @@ async def user_service_health():
         logger.error(f"User service health check failed: {e}")
         raise HTTPException(status_code=503, detail="User service unhealthy")
 
-# Monitoring Service routes
-@app.get("/monitoring/prometheus")
-async def prometheus_proxy():
+# Monitoring Service routes with full proxy support
+@app.api_route("/monitoring/prometheus/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def prometheus_proxy(request: Request, path: str = ""):
     """Proxy to Prometheus"""
-    prometheus_url = os.getenv("PROMETHEUS_URL", "http://prometheus:9090")
-    return {"url": prometheus_url, "service": "prometheus"}
+    prometheus_url = os.getenv("PROMETHEUS_URL", "http://monitoring-stack-kube-prom-prometheus.monitoring:9090")
+    target_url = f"{prometheus_url}/{path}"
+    
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            # Forward the request
+            response = await client.request(
+                method=request.method,
+                url=target_url,
+                params=request.query_params,
+                headers={k: v for k, v in request.headers.items() if k.lower() not in ['host', 'content-length']},
+                content=await request.body() if request.method in ["POST", "PUT"] else None
+            )
+            
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers=dict(response.headers)
+            )
+    except Exception as e:
+        logger.error(f"Prometheus proxy error: {e}")
+        raise HTTPException(status_code=503, detail=f"Prometheus unavailable: {str(e)}")
 
-@app.get("/monitoring/grafana")
-async def grafana_proxy():
+@app.api_route("/monitoring/grafana/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def grafana_proxy(request: Request, path: str = ""):
     """Proxy to Grafana"""
-    grafana_url = os.getenv("GRAFANA_URL", "http://grafana:3000")
-    return {"url": grafana_url, "service": "grafana"}
+    grafana_url = os.getenv("GRAFANA_URL", "http://monitoring-stack-grafana.monitoring:80")
+    target_url = f"{grafana_url}/{path}"
+    
+    try:
+        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+            response = await client.request(
+                method=request.method,
+                url=target_url,
+                params=request.query_params,
+                headers={k: v for k, v in request.headers.items() if k.lower() not in ['host', 'content-length']},
+                content=await request.body() if request.method in ["POST", "PUT"] else None
+            )
+            
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers=dict(response.headers)
+            )
+    except Exception as e:
+        logger.error(f"Grafana proxy error: {e}")
+        raise HTTPException(status_code=503, detail=f"Grafana unavailable: {str(e)}")
 
-@app.get("/monitoring/jaeger")
-async def jaeger_proxy():
+@app.api_route("/monitoring/jaeger/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def jaeger_proxy(request: Request, path: str = ""):
     """Proxy to Jaeger"""
-    jaeger_url = os.getenv("JAEGER_URL", "http://jaeger:16686")
-    return {"url": jaeger_url, "service": "jaeger"}
+    jaeger_url = os.getenv("JAEGER_URL", "http://jaeger-query.istio-system:16686")
+    target_url = f"{jaeger_url}/{path}"
+    
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.request(
+                method=request.method,
+                url=target_url,
+                params=request.query_params,
+                headers={k: v for k, v in request.headers.items() if k.lower() not in ['host', 'content-length']},
+                content=await request.body() if request.method in ["POST", "PUT"] else None
+            )
+            
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers=dict(response.headers)
+            )
+    except Exception as e:
+        logger.error(f"Jaeger proxy error: {e}")
+        raise HTTPException(status_code=503, detail=f"Jaeger unavailable: {str(e)}")
 
-@app.get("/monitoring/kiali")
-async def kiali_proxy():
+@app.api_route("/monitoring/kiali/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def kiali_proxy(request: Request, path: str = ""):
     """Proxy to Kiali"""
     kiali_url = os.getenv("KIALI_URL", "http://kiali.istio-system:20001")
-    return {"url": kiali_url, "service": "kiali"}
+    target_url = f"{kiali_url}/{path}"
+    
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.request(
+                method=request.method,
+                url=target_url,
+                params=request.query_params,
+                headers={k: v for k, v in request.headers.items() if k.lower() not in ['host', 'content-length']},
+                content=await request.body() if request.method in ["POST", "PUT"] else None
+            )
+            
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers=dict(response.headers)
+            )
+    except Exception as e:
+        logger.error(f"Kiali proxy error: {e}")
+        raise HTTPException(status_code=503, detail=f"Kiali unavailable: {str(e)}")
 
 @app.get("/monitoring/status")
 async def monitoring_status():
     """Get monitoring services status"""
-    return {
-        "prometheus": os.getenv("PROMETHEUS_URL", "http://prometheus:9090"),
-        "grafana": os.getenv("GRAFANA_URL", "http://grafana:3000"),
-        "jaeger": os.getenv("JAEGER_URL", "http://jaeger:16686"),
+    services = {
+        "prometheus": os.getenv("PROMETHEUS_URL", "http://monitoring-stack-kube-prom-prometheus.monitoring:9090"),
+        "grafana": os.getenv("GRAFANA_URL", "http://monitoring-stack-grafana.monitoring:80"),
+        "jaeger": os.getenv("JAEGER_URL", "http://jaeger-query.istio-system:16686"),
         "kiali": os.getenv("KIALI_URL", "http://kiali.istio-system:20001"),
-        "metrics_endpoint": "/metrics"
     }
+    
+    # Check health of each service
+    status = {}
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        for name, url in services.items():
+            try:
+                response = await client.get(url)
+                status[name] = {
+                    "url": url,
+                    "status": "healthy" if response.status_code < 500 else "unhealthy",
+                    "status_code": response.status_code
+                }
+            except Exception as e:
+                status[name] = {
+                    "url": url,
+                    "status": "unreachable",
+                    "error": str(e)
+                }
+    
+    return status
 
 if __name__ == "__main__":
     import uvicorn
