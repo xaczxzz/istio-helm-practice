@@ -12,41 +12,39 @@ spec:
   # Monitoring routes via API Gateway (highest priority)
   - match:
     - uri:
-        prefix: /kiali
+        prefix: /monitoring/kiali
     route:
     - destination:
-        host: kiali.istio-system.svc.cluster.local
+        host: app-stack-api-gateway  # ← API Gateway로!
         port:
-          number: 20001
+          number: 8000
 
   - match:
     - uri:
-        prefix: /jaeger
-    rewrite:
-      uri: /jaeger
+        prefix: /monitoring/jaeger
     route:
     - destination:
-        host: jaeger-query.istio-system.svc.cluster.local
+        host: app-stack-api-gateway  # ← API Gateway로!
         port:
-          number: 16686
+          number: 8000
 
   - match:
     - uri:
-        prefix: /grafana
+        prefix: /monitoring/grafana
     route:
     - destination:
-        host: monitoring-stack-grafana.monitoring.svc.cluster.local
+        host: app-stack-api-gateway  # ← API Gateway로!
         port:
-          number: 80
+          number: 8000
 
   - match:
     - uri:
-        prefix: /prometheus
+        prefix: /monitoring/prometheus
     route:
     - destination:
-        host: monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local
+        host: app-stack-api-gateway  # ← API Gateway로!
         port:
-          number: 9090
+          number: 8000
   
   # API Gateway specific routes (highest priority for API)
   - match:

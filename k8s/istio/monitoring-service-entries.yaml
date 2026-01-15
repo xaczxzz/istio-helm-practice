@@ -1,0 +1,44 @@
+apiVersion: networking.istio.io/v1alpha1
+kind: ServiceEntry
+metadata:
+  name: kiali-external
+  namespace: default
+spec:
+  hosts:
+  - kiali.istio-system.svc.cluster.local
+  ports:
+  - number: 20001
+    name: http
+    protocol: HTTP
+  resolution: DNS
+  location: MESH_INTERNAL
+---
+apiVersion: networking.istio.io/v1alpha1
+kind: ServiceEntry
+metadata:
+  name: jaeger-external
+  namespace: default
+spec:
+  hosts:
+  - jaeger-query.istio-system.svc.cluster.local
+  ports:
+  - number: 16686
+    name: http
+    protocol: HTTP
+  resolution: DNS
+  location: MESH_INTERNAL
+---
+apiVersion: networking.istio.io/v1alpha1
+kind: ServiceEntry
+metadata:
+  name: grafana-external
+  namespace: default
+spec:
+  hosts:
+  - monitoring-stack-grafana.monitoring.svc.cluster.local
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  resolution: DNS
+  location: MESH_INTERNAL
