@@ -11,13 +11,13 @@ spec:
   http:
   # Monitoring routes via API Gateway (highest priority)
   - match:
-  - uri:
-      prefix: /monitoring/kiali
-  route:
-  - destination:
-      host: app-stack-api-gateway
-      port:
-        number: 8000
+    - uri:
+        prefix: /monitoring/kiali
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
 
   - match:
     - uri:
