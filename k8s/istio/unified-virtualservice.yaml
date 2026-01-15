@@ -19,32 +19,32 @@ spec:
       port:
         number: 8000
 
-- match:
-  - uri:
-      prefix: /monitoring/jaeger
-  route:
-  - destination:
-      host: app-stack-api-gateway
-      port:
-        number: 8000
+  - match:
+    - uri:
+        prefix: /monitoring/jaeger
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
 
-- match:
-  - uri:
-      prefix: /monitoring/grafana
-  route:
-  - destination:
-      host: app-stack-api-gateway
-      port:
-        number: 8000
+  - match:
+    - uri:
+        prefix: /monitoring/grafana
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
 
-- match:
-  - uri:
-      prefix: /monitoring/prometheus
-  route:
-  - destination:
-      host: app-stack-api-gateway
-      port:
-        number: 8000
+  - match:
+    - uri:
+        prefix: /monitoring/prometheus
+    route:
+    - destination:
+        host: app-stack-api-gateway
+        port:
+          number: 8000
   
   # API Gateway specific routes (highest priority for API)
   - match:
