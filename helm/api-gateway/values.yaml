@@ -170,7 +170,7 @@ monitoring:
     url: "http://grafana:3000"
   jaeger:
     enabled: true
-    url: "http://jaeger:16686"
+    url: "http://jaeger-query.istio-system:16686"
     agent_host: "jaeger"
     agent_port: 6831
   kiali:

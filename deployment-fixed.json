@@ -1,0 +1,174 @@
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "annotations": {
+      "deployment.kubernetes.io/revision": "1",
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app.kubernetes.io/instance\":\"app-stack\",\"app.kubernetes.io/managed-by\":\"Helm\",\"app.kubernetes.io/name\":\"api-gateway\",\"app.kubernetes.io/version\":\"1.16.0\",\"helm.sh/chart\":\"api-gateway-0.1.0\"},\"name\":\"app-stack-api-gateway\",\"namespace\":\"default\"},\"spec\":{\"replicas\":2,\"selector\":{\"matchLabels\":{\"app.kubernetes.io/instance\":\"app-stack\",\"app.kubernetes.io/name\":\"api-gateway\"}},\"template\":{\"metadata\":{\"labels\":{\"app.kubernetes.io/instance\":\"app-stack\",\"app.kubernetes.io/managed-by\":\"Helm\",\"app.kubernetes.io/name\":\"api-gateway\",\"app.kubernetes.io/version\":\"1.16.0\",\"helm.sh/chart\":\"api-gateway-0.1.0\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"GRAFANA_URL\",\"value\":\"http://monitoring-stack-grafana.monitoring:80\"},{\"name\":\"INVENTORY_SERVICE_URL\",\"value\":\"http://app-stack-inventory-service:3000\"},{\"name\":\"JAEGER_AGENT_HOST\",\"value\":\"jaeger\"},{\"name\":\"JAEGER_AGENT_PORT\",\"value\":\"6831\"},{\"name\":\"JAEGER_URL\",\"value\":\"http://jaeger-query.istio-system:16686\"},{\"name\":\"KIALI_URL\",\"value\":\"http://kiali.istio-system:20001\"},{\"name\":\"ORDER_SERVICE_URL\",\"value\":\"http://app-stack-order-service:8080\"},{\"name\":\"PROMETHEUS_URL\",\"value\":\"http://monitoring-stack-kube-prom-prometheus.monitoring:9090\"},{\"name\":\"USER_SERVICE_URL\",\"value\":\"http://app-stack-user-service:8000\"},{\"name\":\"PROMETHEUS_URL\",\"value\":\"http://prometheus:9090\"},{\"name\":\"GRAFANA_URL\",\"value\":\"http://grafana:3000\"},{\"name\":\"JAEGER_URL\",\"value\":\"http://jaeger:16686\"},{\"name\":\"KIALI_URL\",\"value\":\"http://kiali.istio-system:20001\"}],\"image\":\"kind-registry:5000/api-gateway:v1\",\"imagePullPolicy\":\"IfNotPresent\",\"livenessProbe\":{\"httpGet\":{\"path\":\"/\",\"port\":\"http\"}},\"name\":\"api-gateway\",\"ports\":[{\"containerPort\":8000,\"name\":\"http\",\"protocol\":\"TCP\"}],\"readinessProbe\":{\"httpGet\":{\"path\":\"/\",\"port\":\"http\"}},\"resources\":{\"limits\":{\"cpu\":\"500m\",\"memory\":\"256Mi\"},\"requests\":{\"cpu\":\"100m\",\"memory\":\"128Mi\"}}}],\"serviceAccountName\":\"default\"}}}}\n"
+    },
+    "creationTimestamp": "2026-01-15T12:19:54Z",
+    "generation": 1,
+    "labels": {
+      "app.kubernetes.io/instance": "app-stack",
+      "app.kubernetes.io/managed-by": "Helm",
+      "app.kubernetes.io/name": "api-gateway",
+      "app.kubernetes.io/version": "1.16.0",
+      "helm.sh/chart": "api-gateway-0.1.0"
+    },
+    "name": "app-stack-api-gateway",
+    "namespace": "default",
+    "resourceVersion": "3954",
+    "uid": "22f43659-2eda-4410-95c3-cafc6289e4f9"
+  },
+  "spec": {
+    "progressDeadlineSeconds": 600,
+    "replicas": 2,
+    "revisionHistoryLimit": 10,
+    "selector": {
+      "matchLabels": {
+        "app.kubernetes.io/instance": "app-stack",
+        "app.kubernetes.io/name": "api-gateway"
+      }
+    },
+    "strategy": {
+      "rollingUpdate": {
+        "maxSurge": "25%",
+        "maxUnavailable": "25%"
+      },
+      "type": "RollingUpdate"
+    },
+    "template": {
+      "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+          "app.kubernetes.io/instance": "app-stack",
+          "app.kubernetes.io/managed-by": "Helm",
+          "app.kubernetes.io/name": "api-gateway",
+          "app.kubernetes.io/version": "1.16.0",
+          "helm.sh/chart": "api-gateway-0.1.0"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "env": [
+              {
+                "name": "GRAFANA_URL",
+                "value": "http://grafana:3000"
+              },
+              {
+                "name": "INVENTORY_SERVICE_URL",
+                "value": "http://app-stack-inventory-service:3000"
+              },
+              {
+                "name": "JAEGER_AGENT_HOST",
+                "value": "jaeger"
+              },
+              {
+                "name": "JAEGER_AGENT_PORT",
+                "value": "6831"
+              },
+              {
+                "name": "JAEGER_URL",
+                "value": "http://jaeger:16686"
+              },
+              {
+                "name": "KIALI_URL",
+                "value": "http://kiali.istio-system:20001"
+              },
+              {
+                "name": "ORDER_SERVICE_URL",
+                "value": "http://app-stack-order-service:8080"
+              },
+              {
+                "name": "PROMETHEUS_URL",
+                "value": "http://prometheus:9090"
+              },
+              {
+                "name": "USER_SERVICE_URL",
+                "value": "http://app-stack-user-service:8000"
+              }
+            ],
+            "image": "kind-registry:5000/api-gateway:v1",
+            "imagePullPolicy": "IfNotPresent",
+            "livenessProbe": {
+              "failureThreshold": 3,
+              "httpGet": {
+                "path": "/",
+                "port": "http",
+                "scheme": "HTTP"
+              },
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "timeoutSeconds": 1
+            },
+            "name": "api-gateway",
+            "ports": [
+              {
+                "containerPort": 8000,
+                "name": "http",
+                "protocol": "TCP"
+              }
+            ],
+            "readinessProbe": {
+              "failureThreshold": 3,
+              "httpGet": {
+                "path": "/",
+                "port": "http",
+                "scheme": "HTTP"
+              },
+              "periodSeconds": 10,
+              "successThreshold": 1,
+              "timeoutSeconds": 1
+            },
+            "resources": {
+              "limits": {
+                "cpu": "500m",
+                "memory": "256Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "128Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File"
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 30
+      }
+    }
+  },
+  "status": {
+    "availableReplicas": 1,
+    "conditions": [
+      {
+        "lastTransitionTime": "2026-01-15T12:19:54Z",
+        "lastUpdateTime": "2026-01-15T12:22:33Z",
+        "message": "ReplicaSet \"app-stack-api-gateway-7c7d87c675\" has successfully progressed.",
+        "reason": "NewReplicaSetAvailable",
+        "status": "True",
+        "type": "Progressing"
+      },
+      {
+        "lastTransitionTime": "2026-01-15T12:22:39Z",
+        "lastUpdateTime": "2026-01-15T12:22:39Z",
+        "message": "Deployment does not have minimum availability.",
+        "reason": "MinimumReplicasUnavailable",
+        "status": "False",
+        "type": "Available"
+      }
+    ],
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 2,
+    "unavailableReplicas": 1,
+    "updatedReplicas": 2
+  }
+}
