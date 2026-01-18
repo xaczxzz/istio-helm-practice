@@ -15,11 +15,9 @@ spec:
         http2MaxRequests: 100
         maxRequestsPerConnection: 2
         maxRetries: 3
-        consecutiveGatewayErrors: 5
-        interval: 30s
-        baseEjectionTime: 30s
     outlierDetection:
       consecutiveErrors: 3
+      consecutiveGatewayErrors: 5
       interval: 30s
       baseEjectionTime: 30s
       maxEjectionPercent: 50
