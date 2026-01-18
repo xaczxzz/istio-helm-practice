@@ -276,7 +276,7 @@ async def prometheus_proxy(request: Request, path: str = ""):
 @app.api_route("/monitoring/grafana/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def grafana_proxy(request: Request, path: str = ""):
     """Proxy to Grafana"""
-    grafana_url = os.getenv("GRAFANA_URL", "http://monitoring-stack-grafana.monitoring:80")
+    grafana_url = os.getenv("GRAFANA_URL", "http://monitoring-stack-grafana.monitoring.svc.cluster.local:80")
     target_url = f"{grafana_url}/{path}"
     
     try:
@@ -301,7 +301,7 @@ async def grafana_proxy(request: Request, path: str = ""):
 @app.api_route("/monitoring/jaeger/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def jaeger_proxy(request: Request, path: str = ""):
     """Proxy to Jaeger"""
-    jaeger_url = os.getenv("JAEGER_URL", "http://jaeger-query.istio-system:16686")
+    jaeger_url = os.getenv("JAEGER_URL", "http://jaeger-query.istio-system.svc.cluster.local:16686")
     target_url = f"{jaeger_url}/jaeger/{path}"
     
     try:
@@ -326,7 +326,7 @@ async def jaeger_proxy(request: Request, path: str = ""):
 @app.api_route("/monitoring/kiali/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def kiali_proxy(request: Request, path: str = ""):
     """Proxy to Kiali"""
-    kiali_url = os.getenv("KIALI_URL", "http://kiali.istio-system:20001")
+    kiali_url = os.getenv("KIALI_URL", "http://kiali.istio-system.svc.cluster.local:20001")
     target_url = f"{kiali_url}/kiali/{path}"
     
     try:
