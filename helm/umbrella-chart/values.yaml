@@ -99,7 +99,7 @@ api-gateway:
     PROMETHEUS_URL: "http://monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090"
     GRAFANA_URL: "http://monitoring-stack-grafana.monitoring.svc.cluster.local:80"
     JAEGER_URL: "http://jaeger-query.istio-system.svc.cluster.local:16686"
-    # KIALI_URL: "http://kiali.istio-system.svc.cluster.local:20001"
+    KIALI_URL: "http://kiali.istio-system.svc.cluster.local:20001"
     
   resources:
     requests:
