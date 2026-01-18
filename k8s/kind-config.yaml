@@ -38,6 +38,9 @@ nodes:
 - role: worker
   labels:
     zone: zone-b
+- role: worker
+  labels:
+    zone: zone-c
 containerdConfigPatches:
 - |-
   [plugins."io.containerd.grpc.v1.cri".registry]

@@ -1,4 +1,4 @@
-apiVersion: networking.istio.io/v1alpha1
+apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
   name: kiali-external
@@ -13,7 +13,7 @@ spec:
   resolution: DNS
   location: MESH_INTERNAL
 ---
-apiVersion: networking.istio.io/v1alpha1
+apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
   name: jaeger-external
@@ -28,7 +28,7 @@ spec:
   resolution: DNS
   location: MESH_INTERNAL
 ---
-apiVersion: networking.istio.io/v1alpha1
+apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
   name: grafana-external
