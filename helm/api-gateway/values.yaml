@@ -164,27 +164,27 @@ affinity: {}
 monitoring:
   prometheus:
     enabled: true
-    url: "http://prometheus:9090"
+    url: "http://monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090"
   grafana:
     enabled: true
-    url: "http://grafana:3000"
+    url: "http://monitoring-stack-grafana.monitoring.svc.cluster.local:80"
   jaeger:
     enabled: true
-    url: "http://jaeger-query.istio-system:16686"
-    agent_host: "jaeger"
+    url: "http://jaeger-query.istio-system.svc.cluster.local:16686"
+    agent_host: "jaeger-agent.istio-system.svc.cluster.local"
     agent_port: 6831
   kiali:
     enabled: true
-    url: "http://kiali.istio-system:20001"
+    url: "http://kiali.istio-system.svc.cluster.local:20001"
 
 # Environment variables for service discovery
 env:
   ORDER_SERVICE_URL: "http://app-stack-order-service:8080"
   INVENTORY_SERVICE_URL: "http://app-stack-inventory-service:3000"
   USER_SERVICE_URL: "http://app-stack-user-service:8000"
-  JAEGER_AGENT_HOST: "jaeger"
+  JAEGER_AGENT_HOST: "jaeger-agent.istio-system.svc.cluster.local"
   JAEGER_AGENT_PORT: "6831"
-  PROMETHEUS_URL: "http://monitoring-stack-kube-prom-prometheus.monitoring:9090"
-  GRAFANA_URL: "http://monitoring-stack-grafana.monitoring:80"
-  JAEGER_URL: "http://jaeger-query.istio-system:16686"
-  KIALI_URL: "http://kiali.istio-system:20001"
+  PROMETHEUS_URL: "http://monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090"
+  GRAFANA_URL: "http://monitoring-stack-grafana.monitoring.svc.cluster.local:80"
+  JAEGER_URL: "http://jaeger-query.istio-system.svc.cluster.local:16686"
+  KIALI_URL: "http://kiali.istio-system.svc.cluster.local:20001"
