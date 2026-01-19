@@ -26,12 +26,12 @@ global:
 # PostgreSQL configuration (ArgoCD로 별도 관리하므로 비활성화)
 postgresql:
   enabled: true
-  replicaCount: 2
+  replicaCount: 1
 
 # Frontend configuration
 frontend:
   enabled: true
-  replicaCount: 2
+  replicaCount: 1
   image:
     repository: "kind-registry:5000/frontend"  # ✅ 수정
     tag: "v1"
@@ -66,7 +66,7 @@ frontend:
 # API Gateway configuration
 api-gateway:
   enabled: true
-  replicaCount: 2
+  replicaCount: 1
   image:
     repository: "kind-registry:5000/api-gateway"  # ✅ 수정
     tag: "v1"
@@ -112,7 +112,7 @@ api-gateway:
 # Order Service configuration
 order-service:
   enabled: true
-  replicaCount: 3
+  replicaCount: 2
   image:
     repository: "kind-registry:5000/order-service"  # ✅ 수정
     tag: "v1"
