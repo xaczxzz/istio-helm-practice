@@ -24,10 +24,7 @@ spec:
 
 
 ## 배포 순서 (Sync Waves)
-## Wave 0:  Istio Base
-## Wave 1:  Istiod
-## Wave 2:  Istio Gateway
-## Wave 3:  Monitoring Stack
+## Wave 1:  Monitoring Stack
 ## Wave 10: PostgreSQL
 ## Wave 20: Application Stack
 
