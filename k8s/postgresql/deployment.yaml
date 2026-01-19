@@ -9,30 +9,6 @@ data:
     CREATE DATABASE order_db;
     CREATE DATABASE inventory_db;
     CREATE DATABASE user_db;
-  postgresql.conf: |
-    # Connection settings
-    max_connections = 200
-    shared_buffers = 128MB
-    
-    # Performance settings
-    effective_cache_size = 256MB
-    work_mem = 4MB
-    maintenance_work_mem = 64MB
-    
-    # Logging
-    log_statement = 'none'
-    log_min_duration_statement = 1000
-    log_connections = on
-    log_disconnections = on
-    
-    # Connection timeout settings
-    tcp_keepalives_idle = 600
-    tcp_keepalives_interval = 30
-    tcp_keepalives_count = 3
-    
-    # Additional connection settings
-    idle_in_transaction_session_timeout = 300000  # 5 minutes
-    statement_timeout = 30000                     # 30 seconds
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -50,10 +26,23 @@ spec:
       labels:
         app: postgresql
     spec:
+      securityContext:
+        runAsUser: 999      # postgres 사용자 UID
+        runAsGroup: 999     # postgres 그룹 GID
+        fsGroup: 999        # 볼륨 권한을 위한 그룹
       containers:
       - name: postgresql
         image: postgres:16-alpine
         imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          runAsGroup: 999
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: false  # PostgreSQL은 쓰기 권한이 필요
         env:
         - name: POSTGRES_DB
           value: postgres
@@ -68,6 +57,9 @@ spec:
           value: "--auth-host=md5"
         - name: POSTGRES_HOST_AUTH_METHOD
           value: md5
+        # PostgreSQL 성능 및 연결 설정을 환경변수로 적용
+        - name: POSTGRES_INITDB_ARGS
+          value: "--auth-host=md5 --encoding=UTF8 --locale=C"
         ports:
         - containerPort: 5432
           name: postgresql
@@ -96,12 +88,8 @@ spec:
         volumeMounts:
         - name: init-script
           mountPath: /docker-entrypoint-initdb.d
-        - name: postgres-config
-          mountPath: /etc/postgresql/postgresql.conf
-          subPath: postgresql.conf
         - name: data
           mountPath: /var/lib/postgresql/data
-        command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
         resources:
           requests:
             memory: "256Mi"
@@ -111,9 +99,6 @@ spec:
             cpu: "1000m"
       volumes:
       - name: init-script
-        configMap:
-          name: postgres-init-script
-      - name: postgres-config
         configMap:
           name: postgres-init-script
       - name: data
