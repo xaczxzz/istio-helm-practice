@@ -45,31 +45,53 @@ DB_CONFIG = {
     "password": os.getenv("DB_PASSWORD", "postgres"),
 }
 
-# Global database connection
-db_connection = None
+# Connection pool
+from psycopg2 import pool
+db_pool = None
 
-def get_db_connection():
-    global db_connection
+def init_db_pool():
+    global db_pool
     max_retries = 30
     retry_delay = 2
     
-    if db_connection is None or db_connection.closed:
-        for attempt in range(max_retries):
-            try:
-                db_connection = psycopg2.connect(**DB_CONFIG)
-                logger.info(f"Database connection established (attempt {attempt + 1})")
-                return db_connection
-            except psycopg2.OperationalError as e:
-                if attempt < max_retries - 1:
-                    logger.warning(f"Attempt {attempt + 1}/{max_retries}: Failed to connect to database: {e}")
-                    time.sleep(retry_delay)
-                else:
-                    logger.error(f"Failed to connect to database after {max_retries} attempts")
-                    raise
-    return db_connection
+    for attempt in range(max_retries):
+        try:
+            db_pool = psycopg2.pool.SimpleConnectionPool(
+                minconn=1,
+                maxconn=10,
+                **DB_CONFIG
+            )
+            logger.info(f"Database connection pool established (attempt {attempt + 1})")
+            return db_pool
+        except psycopg2.OperationalError as e:
+            if attempt < max_retries - 1:
+                logger.warning(f"Attempt {attempt + 1}/{max_retries}: Failed to connect to database: {e}")
+                time.sleep(retry_delay)
+            else:
+                logger.error(f"Failed to connect to database after {max_retries} attempts")
+                raise
+
+def get_db_connection():
+    global db_pool
+    if db_pool is None:
+        init_db_pool()
+    
+    try:
+        return db_pool.getconn()
+    except Exception as e:
+        logger.error(f"Failed to get connection from pool: {e}")
+        # Try to reinitialize pool
+        init_db_pool()
+        return db_pool.getconn()
+
+def return_db_connection(conn):
+    global db_pool
+    if db_pool and conn:
+        db_pool.putconn(conn)
 
 async def init_db():
     """Initialize database and create tables"""
+    conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -114,15 +136,20 @@ async def init_db():
     except Exception as e:
         logger.error(f"Database initialization failed: {e}")
         raise
+    finally:
+        if conn:
+            return_db_connection(conn)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    init_db_pool()
     await init_db()
     yield
     # Shutdown
-    if db_connection and not db_connection.closed:
-        db_connection.close()
+    global db_pool
+    if db_pool:
+        db_pool.closeall()
 
 # Initialize FastAPI
 app = FastAPI(
@@ -214,6 +241,7 @@ async def add_process_time_header(request: Request, call_next):
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
+    conn = None
     try:
         # Check database connection
         conn = get_db_connection()
@@ -244,6 +272,9 @@ async def health_check():
                 "timestamp": time.time()
             }
         )
+    finally:
+        if conn:
+            return_db_connection(conn)
 
 @app.get("/metrics")
 async def metrics():

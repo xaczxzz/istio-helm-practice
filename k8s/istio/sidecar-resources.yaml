@@ -1,0 +1,54 @@
+# Istio sidecar 기본 리소스 설정
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: istio-sidecar-injector
+  namespace: istio-system
+data:
+  config: |
+    policy: enabled
+    alwaysInjectSelector:
+      []
+    neverInjectSelector:
+      []
+    injectedAnnotations:
+    template: |
+      rewriteAppHTTPProbe: true
+      containers:
+      - name: istio-proxy
+        image: docker.io/istio/proxyv2:1.20.0
+        resources:
+          requests:
+            cpu: 50m      # 기본 100m → 50m로 줄임
+            memory: 64Mi  # 기본 128Mi → 64Mi로 줄임
+          limits:
+            cpu: 200m     # 기본 2000m → 200m로 대폭 줄임
+            memory: 256Mi # 기본 1Gi → 256Mi로 대폭 줄임
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsGroup: 1337
+          runAsNonRoot: true
+          runAsUser: 1337
+---
+# Istio 전역 설정
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: default-resources
+  namespace: istio-system
+spec:
+  values:
+    global:
+      proxy:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi

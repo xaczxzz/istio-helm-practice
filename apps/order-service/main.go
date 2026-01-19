@@ -129,9 +129,10 @@ func initDB() {
 		}
 
 		// Set connection pool settings
-		db.SetMaxOpenConns(25)
-		db.SetMaxIdleConns(5)
+		db.SetMaxOpenConns(15)           // 25 → 15로 줄임
+		db.SetMaxIdleConns(3)            // 5 → 3으로 줄임
 		db.SetConnMaxLifetime(5 * time.Minute)
+		db.SetConnMaxIdleTime(30 * time.Second)  // 유휴 연결 타임아웃 추가
 
 		// Test connection
 		err = db.Ping()
@@ -160,7 +161,11 @@ func initDB() {
 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	)`
 
-	if _, err = db.Exec(createTableQuery); err != nil {
+	// Use context with timeout for table creation
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	
+	if _, err = db.ExecContext(ctx, createTableQuery); err != nil {
 		log.Fatal("Failed to create orders table:", err)
 	}
 
@@ -193,16 +198,21 @@ func podInfoMiddleware() gin.HandlerFunc {
 func healthHandler(c *gin.Context) {
 	hostname, _ := os.Hostname()
 	
-	// Check database connection
+	// Check database connection with timeout
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	defer cancel()
+	
 	dbStatus := "healthy"
-	if err := db.Ping(); err != nil {
+	if err := db.PingContext(ctx); err != nil {
 		dbStatus = "unhealthy"
+		log.Printf("Health check DB ping failed: %v", err)
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"status":    "unhealthy",
 			"service":   "order-service",
 			"version":   Version,
 			"pod_name":  hostname,
 			"database":  dbStatus,
+			"error":     err.Error(),
 			"timestamp": time.Now().Unix(),
 		})
 		return

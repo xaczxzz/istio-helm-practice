@@ -59,9 +59,15 @@ const pool = new Pool({
   database: process.env.DB_NAME || 'postgres',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
-  max: 20,
+  max: 15,                    // 20 → 15로 줄임
+  min: 2,                     // 최소 연결 수 추가
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  connectionTimeoutMillis: 10000,  // 5초 → 10초로 증가
+  acquireTimeoutMillis: 60000,     // 연결 획득 타임아웃 추가
+  createTimeoutMillis: 30000,      // 연결 생성 타임아웃 추가
+  destroyTimeoutMillis: 5000,      // 연결 해제 타임아웃 추가
+  reapIntervalMillis: 1000,        // 유휴 연결 정리 간격
+  createRetryIntervalMillis: 200,  // 연결 재시도 간격
 });
 
 // Initialize database with retry logic
