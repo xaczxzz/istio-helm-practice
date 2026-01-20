@@ -18,11 +18,10 @@ resources:
   # Monitoring configurations
   - monitoring-destinationrules.yaml
   - monitoring-service-entries.yaml
-  
-  # Sidecar resource configurations
-  - sidecar-resources.yaml
 
 # Optional: Traffic policies (can be enabled as needed)
 # - circuit-breaker.yaml
 # - retry-policy.yaml
 # - timeout-policy.yaml
+
+# Note: sidecar-resources.yaml removed as it conflicts with Istio's default configuration
