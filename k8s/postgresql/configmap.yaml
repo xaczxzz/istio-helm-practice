@@ -116,23 +116,10 @@ spec:
       labels:
         app: postgresql
     spec:
-      securityContext:
-        runAsUser: 999
-        runAsGroup: 999
-        fsGroup: 999
       containers:
       - name: postgresql
         image: postgres:16-alpine
         imagePullPolicy: IfNotPresent
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 999
-          runAsGroup: 999
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: false
         env:
         - name: POSTGRES_DB
           value: postgres
