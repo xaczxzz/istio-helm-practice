@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # Namespace configurations with Istio injection
+  - namespace-labels.yaml
+  
+  # Istio Ingress Gateway Service patch
+  - ingress-gateway-service-patch.yaml
+  
+  # Core Istio Gateway and VirtualService
+  - gateway.yaml
+  - unified-virtualservice.yaml
+  
+  # Application DestinationRules and VirtualServices
+  - app-dr.yaml
+  
+  # Monitoring configurations
+  - monitoring-destinationrules.yaml
+  - monitoring-service-entries.yaml
+  
+  # Sidecar resource configurations
+  - sidecar-resources.yaml
+
+# Optional: Traffic policies (can be enabled as needed)
+# - circuit-breaker.yaml
+# - retry-policy.yaml
+# - timeout-policy.yaml

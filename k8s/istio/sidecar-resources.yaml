@@ -34,21 +34,3 @@ data:
           runAsGroup: 1337
           runAsNonRoot: true
           runAsUser: 1337
----
-# Istio 전역 설정
-apiVersion: install.istio.io/v1alpha1
-kind: IstioOperator
-metadata:
-  name: default-resources
-  namespace: istio-system
-spec:
-  values:
-    global:
-      proxy:
-        resources:
-          requests:
-            cpu: 50m
-            memory: 64Mi
-          limits:
-            cpu: 200m
-            memory: 256Mi
