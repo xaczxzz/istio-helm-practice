@@ -3,6 +3,7 @@ set -e
 
 echo "🚀 Deploying applications via ArgoCD..."
 
+sleep 10
 # Apply App of Apps
 echo "Deploying App of Apps..."
 kubectl apply -f argocd/applications/app-of-apps.yaml
@@ -14,7 +15,7 @@ echo "📊 Monitoring ArgoCD applications..."
 echo ""
 
 # Wait a bit for applications to be created
-sleep 5
+
 
 # Show application status
 kubectl get applications -n argocd
