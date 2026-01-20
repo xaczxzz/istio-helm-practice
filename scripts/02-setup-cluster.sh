@@ -82,29 +82,29 @@ kubectl get nodes
 # Istio 설치
 echo ""
 echo "🌐 Installing Istio..."
+######################################################
+# Istio 다운로드 및 설치
+if ! command -v istioctl &> /dev/null; then
+    echo "Downloading Istio..."
+    curl -L https://istio.io/downloadIstio | sh -
+    export PATH="$PWD/istio-*/bin:$PATH"
+else
+    echo "Istio CLI already installed"
+fi
 
-# # Istio 다운로드 및 설치
-# if ! command -v istioctl &> /dev/null; then
-#     echo "Downloading Istio..."
-#     curl -L https://istio.io/downloadIstio | sh -
-#     export PATH="$PWD/istio-*/bin:$PATH"
-# else
-#     echo "Istio CLI already installed"
-# fi
+# Istio 설치
+echo "Installing Istio with demo profile..."
+istioctl install --set values.defaultRevision=default -y
 
-# # Istio 설치
-# echo "Installing Istio with demo profile..."
-# istioctl install --set values.defaultRevision=default -y
+# Istio 설치 확인
+echo "Waiting for Istio to be ready..."
+kubectl wait --for=condition=available --timeout=300s deployment/istiod -n istio-system
 
-# # Istio 설치 확인
-# echo "Waiting for Istio to be ready..."
-# kubectl wait --for=condition=available --timeout=300s deployment/istiod -n istio-system
+# Istio Ingress Gateway 확인
+kubectl wait --for=condition=available --timeout=300s deployment/istio-proxy -n istio-system 2>/dev/null || echo "Istio proxy not found, continuing..."
 
-# # Istio Ingress Gateway 확인
-# kubectl wait --for=condition=available --timeout=300s deployment/istio-proxy -n istio-system 2>/dev/null || echo "Istio proxy not found, continuing..."
-
-# echo "✅ Istio installed successfully!"
-
+echo "✅ Istio installed successfully!"
+######################################################
 echo ""
 echo "✅ Kind cluster '${CLUSTER_NAME}' is ready!"
 echo ""
