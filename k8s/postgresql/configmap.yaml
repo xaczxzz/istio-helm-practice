@@ -146,11 +146,6 @@ spec:
           value: "--auth-host=md5 --encoding=UTF8 --locale=C"
         - name: POSTGRES_HOST_AUTH_METHOD
           value: md5
-        # PostgreSQL 성능 최적화 설정
-        - name: POSTGRES_MAX_CONNECTIONS
-          value: "100"
-        - name: POSTGRES_SHARED_BUFFERS
-          value: "128MB"
         ports:
         - containerPort: 5432
           name: postgresql
@@ -171,11 +166,11 @@ spec:
             - /bin/sh
             - -c
             - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
           successThreshold: 1
-          failureThreshold: 3
+          failureThreshold: 5
         volumeMounts:
         - name: init-scripts
           mountPath: /docker-entrypoint-initdb.d
@@ -184,11 +179,11 @@ spec:
           mountPath: /var/lib/postgresql/data
         resources:
           requests:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "256Mi"
+            cpu: "250m"
           limits:
-            memory: "1Gi"
-            cpu: "2000m"
+            memory: "512Mi"
+            cpu: "1000m"
       volumes:
       - name: init-scripts
         configMap:
