@@ -24,14 +24,21 @@ logger = logging.getLogger(__name__)
 trace.set_tracer_provider(TracerProvider())
 tracer = trace.get_tracer(__name__)
 
-# Configure Jaeger exporter
-jaeger_exporter = JaegerExporter(
-    agent_host_name=os.getenv("JAEGER_AGENT_HOST", "jaeger"),
-    agent_port=int(os.getenv("JAEGER_AGENT_PORT", "6831")),
-)
-
-span_processor = BatchSpanProcessor(jaeger_exporter)
-trace.get_tracer_provider().add_span_processor(span_processor)
+# Configure Jaeger exporter (조건부 활성화)
+jaeger_enabled = os.getenv("JAEGER_ENABLED", "false").lower() == "true"
+if jaeger_enabled:
+    try:
+        jaeger_exporter = JaegerExporter(
+            agent_host_name=os.getenv("JAEGER_AGENT_HOST", "jaeger"),
+            agent_port=int(os.getenv("JAEGER_AGENT_PORT", "6831")),
+        )
+        span_processor = BatchSpanProcessor(jaeger_exporter)
+        trace.get_tracer_provider().add_span_processor(span_processor)
+        logger.info("Jaeger tracing enabled")
+    except Exception as e:
+        logger.warning(f"Failed to initialize Jaeger: {e}")
+else:
+    logger.info("Jaeger tracing disabled")
 
 # Instrument psycopg2
 Psycopg2Instrumentor().instrument()

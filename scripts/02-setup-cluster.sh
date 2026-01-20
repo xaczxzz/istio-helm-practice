@@ -72,17 +72,50 @@ echo ""
 echo "Verifying cluster..."
 kubectl get nodes
 
+# Istio 설치
+echo ""
+echo "🌐 Installing Istio..."
+
+# Istio 다운로드 및 설치
+if ! command -v istioctl &> /dev/null; then
+    echo "Downloading Istio..."
+    curl -L https://istio.io/downloadIstio | sh -
+    export PATH="$PWD/istio-*/bin:$PATH"
+else
+    echo "Istio CLI already installed"
+fi
+
+# Istio 설치
+echo "Installing Istio with demo profile..."
+istioctl install --set values.defaultRevision=default -y
+
+# Istio 설치 확인
+echo "Waiting for Istio to be ready..."
+kubectl wait --for=condition=available --timeout=300s deployment/istiod -n istio-system
+
+# Istio Ingress Gateway 확인
+kubectl wait --for=condition=available --timeout=300s deployment/istio-proxy -n istio-system 2>/dev/null || echo "Istio proxy not found, continuing..."
+
+echo "✅ Istio installed successfully!"
+
 echo ""
 echo "✅ Kind cluster '${CLUSTER_NAME}' is ready!"
 echo ""
 echo "Cluster nodes:"
 kubectl get nodes -o wide
 echo ""
+echo "Istio components:"
+kubectl get pods -n istio-system
+echo ""
 echo "Current context: $(kubectl config current-context)"
 echo ""
 echo "Registry configuration:"
 echo "  - In your values files, use: ${REGISTRY_NAME}:${REGISTRY_PORT}/image-name:tag"
 echo "  - Example: ${REGISTRY_NAME}:${REGISTRY_PORT}/api-gateway:v1"
+echo ""
+echo "Istio configuration:"
+echo "  - Istio is installed with demo profile"
+echo "  - Sidecar injection will be enabled for namespaces with 'istio-injection=enabled' label"
 echo ""
 echo "To delete this cluster later, run:"
 echo "  kind delete cluster --name ${CLUSTER_NAME}"

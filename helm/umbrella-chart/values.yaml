@@ -144,10 +144,10 @@ order-service:
     DB_PASSWORD: "postgres"
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: "128Mi"
+      cpu: "300m"
     limits:
-      memory: "512Mi"
+      memory: "256Mi"
       cpu: "1000m"
 
 # Inventory Service configuration

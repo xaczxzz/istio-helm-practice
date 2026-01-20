@@ -75,6 +75,13 @@ func init() {
 }
 
 func initTracing() func() {
+	// Check if Jaeger is enabled
+	jaegerEnabled := getEnv("JAEGER_ENABLED", "false")
+	if jaegerEnabled != "true" {
+		log.Println("Jaeger tracing disabled")
+		return func() {}
+	}
+
 	// Create Jaeger exporter
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(
 		fmt.Sprintf("http://%s:14268/api/traces", 
@@ -84,6 +91,8 @@ func initTracing() func() {
 		log.Printf("Failed to create Jaeger exporter: %v", err)
 		return func() {}
 	}
+
+	log.Println("Jaeger tracing enabled")
 
 	// Create trace provider
 	tp := trace.NewTracerProvider(

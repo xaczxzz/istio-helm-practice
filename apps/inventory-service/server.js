@@ -11,18 +11,33 @@ const { NodeSDK } = require('@opentelemetry/sdk-node');
 const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
 const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
 
-const jaegerExporter = new JaegerExporter({
-  endpoint: `http://${process.env.JAEGER_ENDPOINT || 'jaeger'}:14268/api/traces`,
-});
+// Jaeger 조건부 활성화
+const jaegerEnabled = (process.env.JAEGER_ENABLED || 'false').toLowerCase() === 'true';
+let traceExporter = null;
+
+if (jaegerEnabled) {
+  try {
+    traceExporter = new JaegerExporter({
+      endpoint: `http://${process.env.JAEGER_ENDPOINT || 'jaeger'}:14268/api/traces`,
+    });
+    console.log('Jaeger tracing enabled');
+  } catch (error) {
+    console.warn('Failed to initialize Jaeger:', error.message);
+  }
+} else {
+  console.log('Jaeger tracing disabled');
+}
 
 const sdk = new NodeSDK({
-  traceExporter: jaegerExporter,
+  traceExporter: traceExporter,
   instrumentations: [getNodeAutoInstrumentations()],
   serviceName: 'inventory-service',
   serviceVersion: process.env.SERVICE_VERSION || 'v1.0.0',
 });
 
-sdk.start();
+if (jaegerEnabled && traceExporter) {
+  sdk.start();
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;

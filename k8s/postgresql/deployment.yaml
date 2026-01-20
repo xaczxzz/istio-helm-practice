@@ -1,118 +1,118 @@
-# k8s/postgresql/deployment.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: postgres-init-script
-  namespace: default
-data:
-  init.sql: |
-    CREATE DATABASE order_db;
-    CREATE DATABASE inventory_db;
-    CREATE DATABASE user_db;
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: postgresql
-  namespace: default
-spec:
-  serviceName: postgresql
-  replicas: 1
-  selector:
-    matchLabels:
-      app: postgresql
-  template:
-    metadata:
-      labels:
-        app: postgresql
-    spec:
-      securityContext:
-        runAsUser: 999      # postgres 사용자 UID
-        runAsGroup: 999     # postgres 그룹 GID
-        fsGroup: 999        # 볼륨 권한을 위한 그룹
-      containers:
-      - name: postgresql
-        image: postgres:16-alpine
-        imagePullPolicy: IfNotPresent
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 999
-          runAsGroup: 999
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: false  # PostgreSQL은 쓰기 권한이 필요
-        env:
-        - name: POSTGRES_DB
-          value: postgres
-        - name: POSTGRES_USER
-          value: postgres
-        - name: POSTGRES_PASSWORD
-          value: postgres
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
-        # Connection and performance settings
-        - name: POSTGRES_INITDB_ARGS
-          value: "--auth-host=md5"
-        - name: POSTGRES_HOST_AUTH_METHOD
-          value: md5
-        # PostgreSQL 성능 및 연결 설정을 환경변수로 적용
-        - name: POSTGRES_INITDB_ARGS
-          value: "--auth-host=md5 --encoding=UTF8 --locale=C"
-        ports:
-        - containerPort: 5432
-          name: postgresql
-        livenessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 6
-        readinessProbe:
-          exec:
-            command:
-            - /bin/sh
-            - -c
-            - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
-          initialDelaySeconds: 5
-          periodSeconds: 2
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 3
-        volumeMounts:
-        - name: init-script
-          mountPath: /docker-entrypoint-initdb.d
-        - name: data
-          mountPath: /var/lib/postgresql/data
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "1000m"
-      volumes:
-      - name: init-script
-        configMap:
-          name: postgres-init-script
-      - name: data
-        emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgresql
-  namespace: default
-spec:
-  selector:
-    app: postgresql
-  ports:
-  - port: 5432
-    targetPort: 5432
-  type: ClusterIP
+# # k8s/postgresql/deployment.yaml
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: postgres-init-script
+#   namespace: default
+# data:
+#   init.sql: |
+#     CREATE DATABASE order_db;
+#     CREATE DATABASE inventory_db;
+#     CREATE DATABASE user_db;
+# ---
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: postgresql
+#   namespace: default
+# spec:
+#   serviceName: postgresql
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: postgresql
+#   template:
+#     metadata:
+#       labels:
+#         app: postgresql
+#     spec:
+#       securityContext:
+#         runAsUser: 999      # postgres 사용자 UID
+#         runAsGroup: 999     # postgres 그룹 GID
+#         fsGroup: 999        # 볼륨 권한을 위한 그룹
+#       containers:
+#       - name: postgresql
+#         image: postgres:16-alpine
+#         imagePullPolicy: IfNotPresent
+#         securityContext:
+#           runAsNonRoot: true
+#           runAsUser: 999
+#           runAsGroup: 999
+#           allowPrivilegeEscalation: false
+#           capabilities:
+#             drop:
+#             - ALL
+#           readOnlyRootFilesystem: false  # PostgreSQL은 쓰기 권한이 필요
+#         env:
+#         - name: POSTGRES_DB
+#           value: postgres
+#         - name: POSTGRES_USER
+#           value: postgres
+#         - name: POSTGRES_PASSWORD
+#           value: postgres
+#         - name: PGDATA
+#           value: /var/lib/postgresql/data/pgdata
+#         # Connection and performance settings
+#         - name: POSTGRES_INITDB_ARGS
+#           value: "--auth-host=md5"
+#         - name: POSTGRES_HOST_AUTH_METHOD
+#           value: md5
+#         # PostgreSQL 성능 및 연결 설정을 환경변수로 적용
+#         - name: POSTGRES_INITDB_ARGS
+#           value: "--auth-host=md5 --encoding=UTF8 --locale=C"
+#         ports:
+#         - containerPort: 5432
+#           name: postgresql
+#         livenessProbe:
+#           exec:
+#             command:
+#             - /bin/sh
+#             - -c
+#             - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
+#           initialDelaySeconds: 30
+#           periodSeconds: 10
+#           timeoutSeconds: 5
+#           successThreshold: 1
+#           failureThreshold: 6
+#         readinessProbe:
+#           exec:
+#             command:
+#             - /bin/sh
+#             - -c
+#             - exec pg_isready -U postgres -h 127.0.0.1 -p 5432
+#           initialDelaySeconds: 5
+#           periodSeconds: 2
+#           timeoutSeconds: 1
+#           successThreshold: 1
+#           failureThreshold: 3
+#         volumeMounts:
+#         - name: init-script
+#           mountPath: /docker-entrypoint-initdb.d
+#         - name: data
+#           mountPath: /var/lib/postgresql/data
+#         resources:
+#           requests:
+#             memory: "256Mi"
+#             cpu: "250m"
+#           limits:
+#             memory: "512Mi"
+#             cpu: "1000m"
+#       volumes:
+#       - name: init-script
+#         configMap:
+#           name: postgres-init-script
+#       - name: data
+#         emptyDir: {}
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: postgresql
+#   namespace: default
+# spec:
+#   selector:
+#     app: postgresql
+#   ports:
+#   - port: 5432
+#     targetPort: 5432
+#   type: ClusterIP
