@@ -3,13 +3,13 @@ set -e
 
 echo "🚀 Installing ArgoCD..."
 
-# Default namespace에 Istio sidecar 주입 활성화
-echo "Enabling Istio sidecar injection for default namespace..."
-kubectl label namespace default istio-injection=enabled --overwrite
+# # Default namespace에 Istio sidecar 주입 활성화
+# echo "Enabling Istio sidecar injection for default namespace..."
+# kubectl label namespace default istio-injection=enabled --overwrite
 
-# Create ArgoCD namespace and enable Istio injection
-kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
-kubectl label namespace argocd istio-injection=enabled --overwrite
+# # Create ArgoCD namespace and enable Istio injection
+# kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+# kubectl label namespace argocd istio-injection=enabled --overwrite
 
 # Install ArgoCD
 # kubectl create namespace argocd
