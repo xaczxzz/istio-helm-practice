@@ -13,11 +13,13 @@ spec:
   - match:
     - uri:
         prefix: /monitoring/kiali
+    rewrite:
+      uri: /kiali
     route:
     - destination:
-        host: app-stack-api-gateway  # ← API Gateway로!
+        host: kiali.istio-system.svc.cluster.local
         port:
-          number: 8000
+          number: 20001
 
   - match:
     - uri:
