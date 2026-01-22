@@ -161,22 +161,22 @@ tolerations: []
 affinity: {}
 
 # Monitoring services configuration
-monitoring:
-  prometheus:
-    enabled: true
-    url: "http://monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090"
-  grafana:
-    enabled: true
-    url: "http://monitoring-stack-grafana.monitoring.svc.cluster.local:80"
-  jaeger:
-    enabled: true
-    url: "http://jaeger-query.istio-system.svc.cluster.local:16686"
-    agent_host: "jaeger-agent.istio-system.svc.cluster.local"
-    agent_port: 6831
-  kiali:
-    enabled: true
-    url: "http://kiali.istio-system.svc.cluster.local:20001"
+# monitoring:
+#   prometheus:
+#     enabled: true
+#     url: "http://monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090"
+#   grafana:
+#     enabled: true
+#     url: "http://monitoring-stack-grafana.monitoring.svc.cluster.local:80"
+#   jaeger:
+#     enabled: true
+#     url: "http://jaeger-query.istio-system.svc.cluster.local:16686"
+#     agent_host: "jaeger-agent.istio-system.svc.cluster.local"
+#     agent_port: 6831
+#   kiali:
+#     enabled: true
+#     url: "http://kiali.istio-system.svc.cluster.local:20001"
 
 # Environment variables for service discovery
 # These will be overridden by umbrella chart values
-env: {}
+# env: {}
