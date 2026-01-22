@@ -32,7 +32,7 @@ spec:
             url: http://jaeger-query.istio-system.svc.cluster.local:16686
         server:
           port: 20001
-          web_root: /kiali
+          web_root: /monitoring/kiali
         deployment:
           resources:
             requests:
