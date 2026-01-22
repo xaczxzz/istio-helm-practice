@@ -12,7 +12,18 @@ spec:
   # Monitoring routes via API Gateway (highest priority)
   - match:
     - uri:
-        prefix: /monitoring/kiali
+        prefix: /monitoring/kiali/
+    rewrite:
+      uri: /kiali/
+    route:
+    - destination:
+        host: kiali.istio-system.svc.cluster.local
+        port:
+          number: 20001
+  
+  - match:
+    - uri:
+        exact: /monitoring/kiali
     rewrite:
       uri: /kiali
     route:
