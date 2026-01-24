@@ -13,7 +13,6 @@ spec:
   - match:
     - uri:
         prefix: /monitoring/kiali
-     # ← 이 줄 추가!
     route:
     - destination:
         host: kiali.istio-system.svc.cluster.local
@@ -23,10 +22,9 @@ spec:
   - match:
     - uri:
         prefix: /monitoring/jaeger
-     # ← 이 줄 추가!
     route:
     - destination:
-        host: jaeger-query.istio-system.svc.cluster.local
+        host: monitoring-jaeger-query.istio-system.svc.cluster.local
         port:
           number: 16686
 
