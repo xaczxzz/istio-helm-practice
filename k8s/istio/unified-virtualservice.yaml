@@ -13,8 +13,7 @@ spec:
   - match:
     - uri:
         prefix: /monitoring/kiali
-    rewrite:
-      uri: /  # ← 이 줄 추가!
+     # ← 이 줄 추가!
     route:
     - destination:
         host: kiali.istio-system.svc.cluster.local
@@ -24,8 +23,7 @@ spec:
   - match:
     - uri:
         prefix: /monitoring/jaeger
-    rewrite:
-      uri: /  # ← 이 줄 추가!
+     # ← 이 줄 추가!
     route:
     - destination:
         host: jaeger-query.istio-system.svc.cluster.local

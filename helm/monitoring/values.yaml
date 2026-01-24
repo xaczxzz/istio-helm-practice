@@ -5,6 +5,9 @@ jaeger:
     enabled: true
     image: jaegertracing/all-in-one
     tag: "1.52"
+    extraEnv:  # ← 추가
+      - name: QUERY_BASE_PATH
+        value: /monitoring/jaeger
     resources:
       requests:
         cpu: 100m
@@ -42,7 +45,7 @@ kiali:
       url: http://jaeger-query.istio-system.svc.cluster.local:16686
   server:
     port: 20001
-    web_root: /
+    web_root: /monitoring/kiali
   deployment:
     ingress:
       enabled: false
