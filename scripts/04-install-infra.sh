@@ -13,9 +13,6 @@ kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 kubectl label namespace argocd istio-injection=enabled --overwrite
 ###########################
 
-#!/bin/bash
-set -e
-
 echo "📊 Installing Monitoring Tools..."
 
 # Helm repo 추가
@@ -76,10 +73,8 @@ echo "  Kiali UI:"
 echo "    kubectl port-forward -n istio-system svc/kiali 20001:20001"
 echo "    Then visit: http://localhost:20001"
 echo ""
-############################# 
 
 # Install ArgoCD
-
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.16/manifests/install.yaml
 
 # Wait for ArgoCD pods to be created

@@ -1,0 +1,53 @@
+# DISABLED - Using Helm installation instead
+# argocd/applications/02-kiali.yaml
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kiali
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  project: default
+  source:
+    repoURL: https://kiali.org/helm-charts
+    targetRevision: 1.86.0
+    chart: kiali-server
+    helm:
+      values: |
+        auth:
+          strategy: anonymous
+        external_services:
+          istio:
+            url_service_version: http://istiod.istio-system:15014/version
+          prometheus:
+            url: http://monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090
+          grafana:
+            enabled: true
+            in_cluster_url: http://monitoring-stack-grafana.monitoring.svc.cluster.local:80
+            url: http://monitoring-stack-grafana.monitoring.svc.cluster.local:80
+          jaeger:
+            enabled: true
+            in_cluster_url: http://jaeger-query.istio-system.svc.cluster.local:16686
+            url: http://jaeger-query.istio-system.svc.cluster.local:16686
+        server:
+          port: 20001
+          web_root: /monitoring/kiali
+        deployment:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
