@@ -24,9 +24,9 @@ spec:
         prefix: /monitoring/jaeger
     route:
     - destination:
-        host: app-stack-api-gateway  # ← API Gateway로!
+        host: jaeger-query.istio-system.svc.cluster.local
         port:
-          number: 8000
+          number: 16686
 
   - match:
     - uri:

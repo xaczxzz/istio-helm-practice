@@ -42,7 +42,7 @@ kiali:
       url: http://jaeger-query.istio-system.svc.cluster.local:16686
   server:
     port: 20001
-    web_root: /monitoring/kiali
+    web_root: /
   deployment:
     ingress:
       enabled: false
