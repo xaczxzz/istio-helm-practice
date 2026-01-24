@@ -5,7 +5,7 @@ jaeger:
     enabled: true
     image: jaegertracing/all-in-one
     tag: "1.52"
-    extraEnv:  # ← 추가
+    extraEnv:
       - name: QUERY_BASE_PATH
         value: /monitoring/jaeger
     resources:
