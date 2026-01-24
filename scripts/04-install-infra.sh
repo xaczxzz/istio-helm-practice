@@ -12,6 +12,72 @@ kubectl label namespace default istio-injection=enabled --overwrite
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 kubectl label namespace argocd istio-injection=enabled --overwrite
 ###########################
+
+#!/bin/bash
+set -e
+
+echo "📊 Installing Monitoring Tools..."
+
+# Helm repo 추가
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo add kiali https://kiali.org/helm-charts
+helm repo update
+
+###########################################
+# Jaeger 설치
+###########################################
+echo ""
+echo "🔍 Installing Jaeger..."
+helm upgrade --install jaeger jaegertracing/jaeger \
+  --version 0.71.18 \
+  --namespace istio-system \
+  --create-namespace \
+  --set allInOne.enabled=true \
+  --set allInOne.image=jaegertracing/all-in-one:1.57 \
+  --set allInOne.resources.requests.cpu=100m \
+  --set allInOne.resources.requests.memory=256Mi \
+  --set allInOne.resources.limits.cpu=500m \
+  --set allInOne.resources.limits.memory=512Mi \
+  --wait
+
+echo "Waiting for Jaeger to be ready..."
+kubectl wait --for=condition=available --timeout=180s deployment/jaeger -n istio-system
+
+###########################################
+# Kiali 설치
+###########################################
+echo ""
+echo "📈 Installing Kiali..."
+helm upgrade --install kiali-server kiali/kiali-server \
+  --namespace istio-system \
+  --set auth.strategy=anonymous \
+  --set deployment.ingress.enabled=false \
+  --wait
+
+echo "Waiting for Kiali to be ready..."
+kubectl wait --for=condition=available --timeout=180s deployment/kiali -n istio-system
+
+###########################################
+# 설치 확인
+###########################################
+echo ""
+echo "✅ Monitoring tools installed successfully!"
+echo ""
+echo "📊 Monitoring Components:"
+kubectl get pods -n istio-system | grep -E "jaeger|kiali"
+echo ""
+echo "🔧 To access monitoring tools:"
+echo ""
+echo "  Jaeger UI:"
+echo "    kubectl port-forward -n istio-system svc/jaeger-query 16686:16686"
+echo "    Then visit: http://localhost:16686"
+echo ""
+echo "  Kiali UI:"
+echo "    kubectl port-forward -n istio-system svc/kiali 20001:20001"
+echo "    Then visit: http://localhost:20001"
+echo ""
+############################# 
+
 # Install ArgoCD
 
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.16/manifests/install.yaml
