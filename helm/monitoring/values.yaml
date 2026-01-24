@@ -3,7 +3,8 @@ jaeger:
   enabled: true
   allInOne:
     enabled: true
-    image: jaegertracing/all-in-one:1.76
+    image: jaegertracing/all-in-one
+    tag: "1.76"
     resources:
       requests:
         cpu: 100m
