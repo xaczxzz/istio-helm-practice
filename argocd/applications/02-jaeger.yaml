@@ -28,6 +28,8 @@ spec:
           options:
             log-level: info
             memory.max-traces: 50000
+          storage:
+            type: memory  # 이 줄 추가!
           resources:
             requests:
               cpu: 100m
