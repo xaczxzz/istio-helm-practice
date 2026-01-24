@@ -41,8 +41,8 @@ kiali:
       url: http://monitoring-stack-grafana.monitoring.svc.cluster.local:80
     jaeger:
       enabled: true
-      in_cluster_url: http://jaeger-query.istio-system.svc.cluster.local:16686
-      url: http://jaeger-query.istio-system.svc.cluster.local:16686
+      in_cluster_url: http://monitoring-jaeger-query.istio-system.svc.cluster.local:16686
+      url: http://monitoring-jaeger-query.istio-system.svc.cluster.local:16686
   server:
     port: 20001
     web_root: /monitoring/kiali
