@@ -13,20 +13,14 @@ spec:
   - match:
     - uri:
         prefix: /monitoring/kiali/
+    rewrite:
+      uri: /kiali/
     route:
     - destination:
         host: kiali.istio-system.svc.cluster.local
         port:
           number: 20001
 
-  - match:
-    - uri:
-        exact: /monitoring/kiali
-    route:
-    - destination:
-        host: kiali.istio-system.svc.cluster.local
-        port:
-          number: 20001
 
   - match:
     - uri:
