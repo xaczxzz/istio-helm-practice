@@ -20,7 +20,11 @@ spec:
           elasticsearch: false
         allInOne:
           enabled: true
-          image: jaegertracing/all-in-one:1.57
+          image:
+            registry: docker.io
+            repository: jaegertracing/all-in-one
+            tag: "1.57"
+            pullPolicy: IfNotPresent
           options:
             log-level: info
             memory.max-traces: 50000
