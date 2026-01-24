@@ -1,0 +1,16 @@
+apiVersion: v2
+name: monitoring
+description: Monitoring stack with Jaeger and Kiali
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: jaeger
+    version: 0.71.18
+    repository: https://jaegertracing.github.io/helm-charts
+    condition: jaeger.enabled
+  - name: kiali-server
+    version: 1.86.0
+    repository: https://kiali.org/helm-charts
+    condition: kiali.enabled

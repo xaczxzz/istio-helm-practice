@@ -1,0 +1,54 @@
+# Monitoring stack values
+jaeger:
+  enabled: true
+  allInOne:
+    enabled: true
+    image: jaegertracing/all-in-one:1.57
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+  agent:
+    enabled: false
+  collector:
+    enabled: false
+  query:
+    enabled: false
+  cassandra:
+    enabled: false
+  elasticsearch:
+    enabled: false
+
+kiali:
+  enabled: true
+  auth:
+    strategy: anonymous
+  external_services:
+    istio:
+      url_service_version: http://istiod.istio-system:15014/version
+    prometheus:
+      url: http://monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local:9090
+    grafana:
+      enabled: true
+      in_cluster_url: http://monitoring-stack-grafana.monitoring.svc.cluster.local:80
+      url: http://monitoring-stack-grafana.monitoring.svc.cluster.local:80
+    jaeger:
+      enabled: true
+      in_cluster_url: http://jaeger-query.istio-system.svc.cluster.local:16686
+      url: http://jaeger-query.istio-system.svc.cluster.local:16686
+  server:
+    port: 20001
+    web_root: /monitoring/kiali
+  deployment:
+    ingress:
+      enabled: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi

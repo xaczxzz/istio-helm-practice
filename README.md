@@ -50,8 +50,8 @@ Kubernetes 학습을 위한 완전한 3-tier 애플리케이션과 observability
 - **Monitoring**: 
   - Prometheus (메트릭 수집)
   - Grafana (시각화)
-  - Jaeger (분산 트레이싱)
-  - Kiali (Service Mesh 시각화)
+  - Jaeger (분산 트레이싱) - Helm 차트로 관리
+  - Kiali (Service Mesh 시각화) - Helm 차트로 관리
 - **Logging**: Grafana Alloy → Loki
 - **Load Testing**: k6
 
