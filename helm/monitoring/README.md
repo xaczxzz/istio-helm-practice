@@ -23,7 +23,7 @@ jaeger:
   enabled: true
   allInOne:
     enabled: true
-    image: jaegertracing/all-in-one:1.57
+    image: jaegertracing/all-in-one:1.76
 
 kiali:
   enabled: true
