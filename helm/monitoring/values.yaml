@@ -46,6 +46,7 @@ kiali:
   server:
     port: 20001
     web_root: /monitoring/kiali
+    web_fqdn: localhost
   deployment:
     ingress:
       enabled: false
