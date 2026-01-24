@@ -9,7 +9,7 @@ spec:
   gateways:
   - app-gateway
   http:
-  # Monitoring routes via API Gateway (highest priority)
+  # Monitoring routes (highest priority)
   - match:
     - uri:
         prefix: /monitoring/kiali/
@@ -40,24 +40,6 @@ spec:
         host: monitoring-jaeger-query.istio-system.svc.cluster.local
         port:
           number: 16686
-
-  - match:
-    - uri:
-        prefix: /monitoring/grafana
-    route:
-    - destination:
-        host: app-stack-api-gateway
-        port:
-          number: 8000
-
-  - match:
-    - uri:
-        prefix: /monitoring/prometheus
-    route:
-    - destination:
-        host: app-stack-api-gateway
-        port:
-          number: 8000
 
   - match:
     - uri:
