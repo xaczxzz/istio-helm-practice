@@ -94,6 +94,16 @@ spec:
       uri: /monitoring/grafana/
       redirectCode: 301
 
+  # Grafana static resources and API calls (login, api, public, etc.)
+  - match:
+    - uri:
+        regex: "^/(login|api|public|avatar|plugins).*"
+    route:
+    - destination:
+        host: monitoring-stack-grafana.monitoring.svc.cluster.local
+        port:
+          number: 80
+
   # Prometheus routes - handle both with and without trailing slash
   - match:
     - uri:
