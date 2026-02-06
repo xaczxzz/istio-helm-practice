@@ -47,28 +47,15 @@ spec:
         port:
           number: 20001
 
-  # Jaeger routes - handle both with and without trailing slash
+  # Jaeger routes
   - match:
     - uri:
-        prefix: /monitoring/jaeger/
-    rewrite:
-      uri: /
+        prefix: /monitoring/jaeger
     route:
     - destination:
         host: monitoring-jaeger-query.istio-system.svc.cluster.local
         port:
           number: 16686
-    headers:
-      request:
-        set:
-          X-Forwarded-Prefix: /monitoring/jaeger
-
-  - match:
-    - uri:
-        exact: /monitoring/jaeger
-    redirect:
-      uri: /monitoring/jaeger/
-      redirectCode: 301
 
   # Grafana routes - handle both with and without trailing slash
   - match:
