@@ -124,9 +124,12 @@ async function createOrder() {
 async function checkServiceHealth() {
     const services = [
         { name: 'frontend', endpoint: '/health', indicator: 'frontend-indicator' },
-        // API Gateway removed - using Istio direct routing
+        // Backend services - routed through VirtualService to actual services
+        // VirtualService rewrites /api/orders -> /orders (order-service:8080)
         { name: 'order', endpoint: '/api/orders/health', indicator: 'order-indicator' },
+        // VirtualService rewrites /api/inventory -> /inventory (inventory-service:3000)
         { name: 'inventory', endpoint: '/api/inventory/health', indicator: 'inventory-indicator' },
+        // VirtualService rewrites /api/users -> /users (user-service:8000)
         { name: 'user', endpoint: '/api/users/health', indicator: 'user-indicator' }
     ];
     
@@ -214,4 +217,21 @@ function fetchWithTimeout(url, options = {}, timeout = 5000) {
             setTimeout(() => reject(new Error('Request timeout')), timeout)
         )
     ]);
+}
+
+// Monitoring Tool Quick Access Links
+// These are based on VirtualService routing configuration
+const MONITORING_URLS = {
+    kiali: '/monitoring/kiali/',
+    jaeger: '/monitoring/jaeger/',
+    grafana: '/monitoring/grafana/',
+    prometheus: '/monitoring/prometheus/'
+};
+
+// Function to open monitoring tools (optional utility function)
+function openMonitoringTool(tool) {
+    const url = MONITORING_URLS[tool];
+    if (url) {
+        window.open(url, '_blank');
+    }
 }

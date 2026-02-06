@@ -2,7 +2,7 @@
 set -e
 
 REGISTRY="localhost:5002"
-SERVICES=("frontend" "api-gateway" "order-service" "inventory-service" "user-service")
+SERVICES=("frontend" "order-service" "inventory-service" "user-service") #api-gateway
 VERSIONS=("v1" "v2")
 
 echo "🏗️  Building application images..."
