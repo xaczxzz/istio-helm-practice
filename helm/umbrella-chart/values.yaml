@@ -63,9 +63,9 @@ frontend:
       memory: "256Mi"    # 128Mi → 256Mi로 증가
       cpu: "500m"        # 200m → 500m로 증가
 
-# API Gateway configuration
+# API Gateway configuration (DISABLED - using Istio direct routing)
 api-gateway:
-  enabled: true
+  enabled: false
   replicaCount: 1
   image:
     repository: "kind-registry:5000/api-gateway"  # ✅ 수정

@@ -124,7 +124,7 @@ async function createOrder() {
 async function checkServiceHealth() {
     const services = [
         { name: 'frontend', endpoint: '/health', indicator: 'frontend-indicator' },
-        { name: 'api-gateway', endpoint: '/api/health', indicator: 'api-gateway-indicator' },
+        // API Gateway removed - using Istio direct routing
         { name: 'order', endpoint: '/api/orders/health', indicator: 'order-indicator' },
         { name: 'inventory', endpoint: '/api/inventory/health', indicator: 'inventory-indicator' },
         { name: 'user', endpoint: '/api/users/health', indicator: 'user-indicator' }

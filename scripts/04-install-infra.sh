@@ -70,5 +70,4 @@ echo "  1. Deploy ArgoCD applications: kubectl apply -f argocd/applications/app-
 echo "  2. Monitor deployment: kubectl get applications -n argocd"
 echo ""
 echo "💡 Note: Jaeger and Kiali will be installed via ArgoCD applications"
-```
 
