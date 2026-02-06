@@ -9,7 +9,12 @@ spec:
   gateways:
   - app-gateway
   http:
-  # Monitoring routes (highest priority)
+  # ============================================
+  # Monitoring Routes (Direct to Services)
+  # All monitoring tools are accessed directly via Istio Ingress Gateway
+  # without going through API Gateway
+  # ============================================
+  
   - match:
     - uri:
         prefix: /monitoring/kiali
@@ -30,14 +35,28 @@ spec:
 
   - match:
     - uri:
-        prefix: /monitoring/
+        prefix: /monitoring/grafana
     route:
     - destination:
-        host: app-stack-api-gateway
+        host: monitoring-stack-grafana.monitoring.svc.cluster.local
         port:
-          number: 8000
+          number: 80
+
+  - match:
+    - uri:
+        prefix: /monitoring/prometheus
+    route:
+    - destination:
+        host: monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local
+        port:
+          number: 9090
   
-  # API Gateway specific routes (highest priority for API)
+  # ============================================
+  # API Routes (via API Gateway)
+  # All /api/* requests are routed through API Gateway
+  # which then forwards to backend services
+  # ============================================
+  
   - match:
     - uri:
         exact: /api/health
@@ -93,7 +112,6 @@ spec:
         port:
           number: 8000
   
-  # API Gateway catch-all (medium priority)
   - match:
     - uri:
         prefix: /api/
@@ -105,7 +123,11 @@ spec:
         port:
           number: 8000
   
-  # Frontend routes (lowest priority - catch all)
+  # ============================================
+  # Frontend Routes (Default/Catch-all)
+  # All other requests go to frontend
+  # ============================================
+  
   - match:
     - uri:
         prefix: /
