@@ -14,43 +14,98 @@ spec:
   # All monitoring tools are accessed directly via Istio Ingress Gateway
   # ============================================
   
+  # Kiali routes - handle both with and without trailing slash
   - match:
     - uri:
-        prefix: /monitoring/kiali
+        prefix: /monitoring/kiali/
     rewrite:
-      uri: /kiali
+      uri: /kiali/
     route:
     - destination:
         host: kiali.istio-system.svc.cluster.local
         port:
           number: 20001
+    headers:
+      request:
+        set:
+          X-Forwarded-Prefix: /monitoring/kiali
 
   - match:
     - uri:
-        prefix: /monitoring/jaeger
+        exact: /monitoring/kiali
+    redirect:
+      uri: /monitoring/kiali/
+      redirectCode: 301
+
+  # Jaeger routes - handle both with and without trailing slash
+  - match:
+    - uri:
+        prefix: /monitoring/jaeger/
+    rewrite:
+      uri: /
     route:
     - destination:
         host: monitoring-jaeger-query.istio-system.svc.cluster.local
         port:
           number: 16686
+    headers:
+      request:
+        set:
+          X-Forwarded-Prefix: /monitoring/jaeger
 
   - match:
     - uri:
-        prefix: /monitoring/grafana
+        exact: /monitoring/jaeger
+    redirect:
+      uri: /monitoring/jaeger/
+      redirectCode: 301
+
+  # Grafana routes - handle both with and without trailing slash
+  - match:
+    - uri:
+        prefix: /monitoring/grafana/
+    rewrite:
+      uri: /
     route:
     - destination:
         host: monitoring-stack-grafana.monitoring.svc.cluster.local
         port:
           number: 80
+    headers:
+      request:
+        set:
+          X-Forwarded-Prefix: /monitoring/grafana
+          X-Forwarded-Host: "*"
 
   - match:
     - uri:
-        prefix: /monitoring/prometheus
+        exact: /monitoring/grafana
+    redirect:
+      uri: /monitoring/grafana/
+      redirectCode: 301
+
+  # Prometheus routes - handle both with and without trailing slash
+  - match:
+    - uri:
+        prefix: /monitoring/prometheus/
+    rewrite:
+      uri: /
     route:
     - destination:
         host: monitoring-stack-kube-prom-prometheus.monitoring.svc.cluster.local
         port:
           number: 9090
+    headers:
+      request:
+        set:
+          X-Forwarded-Prefix: /monitoring/prometheus
+
+  - match:
+    - uri:
+        exact: /monitoring/prometheus
+    redirect:
+      uri: /monitoring/prometheus/
+      redirectCode: 301
   
   # ============================================
   # Backend Service Routes (Direct - No API Gateway)
@@ -96,6 +151,7 @@ spec:
   # ============================================
   # Frontend Routes (Default/Catch-all)
   # All other requests go to frontend
+  # 이것은 반드시 마지막에 위치해야 함
   # ============================================
   
   - match:
