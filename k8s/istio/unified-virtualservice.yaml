@@ -17,6 +17,8 @@ spec:
   - match:
     - uri:
         prefix: /monitoring/kiali
+    rewrite:
+      uri: /kiali
     route:
     - destination:
         host: kiali.istio-system.svc.cluster.local
