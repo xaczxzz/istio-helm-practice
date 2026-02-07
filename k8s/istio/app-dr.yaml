@@ -5,7 +5,7 @@ metadata:
   name: frontend-dr
   namespace: default
 spec:
-  host: frontend
+  host: app-stack-frontend
   trafficPolicy:
     connectionPool:
       tcp:
@@ -23,29 +23,29 @@ spec:
     labels:
       version: v2
 ---
-apiVersion: networking.istio.io/v1beta1
-kind: DestinationRule
-metadata:
-  name: api-gateway-dr
-  namespace: default
-spec:
-  host: api-gateway
-  trafficPolicy:
-    connectionPool:
-      tcp:
-        maxConnections: 100
-      http:
-        http1MaxPendingRequests: 50
-        maxRequestsPerConnection: 10
-    loadBalancer:
-      simple: ROUND_ROBIN
-  subsets:
-  - name: v1
-    labels:
-      version: v1
-  - name: v2
-    labels:
-      version: v2
+# apiVersion: networking.istio.io/v1beta1
+# kind: DestinationRule
+# metadata:
+#   name: api-gateway-dr
+#   namespace: default
+# spec:
+#   host: api-gateway
+#   trafficPolicy:
+#     connectionPool:
+#       tcp:
+#         maxConnections: 100
+#       http:
+#         http1MaxPendingRequests: 50
+#         maxRequestsPerConnection: 10
+#     loadBalancer:
+#       simple: ROUND_ROBIN
+#   subsets:
+#   - name: v1
+#     labels:
+#       version: v1
+#   - name: v2
+#     labels:
+#       version: v2
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
@@ -53,7 +53,7 @@ metadata:
   name: order-service-dr
   namespace: default
 spec:
-  host: order-service
+  host: app-stack-order-service 
   trafficPolicy:
     connectionPool:
       tcp:
@@ -77,7 +77,7 @@ metadata:
   name: inventory-service-dr
   namespace: default
 spec:
-  host: inventory-service
+  host: app-stack-inventory-service
   trafficPolicy:
     connectionPool:
       tcp:
@@ -106,7 +106,7 @@ metadata:
   name: user-service-dr
   namespace: default
 spec:
-  host: user-service
+  host: app-stack-user-service
   trafficPolicy:
     connectionPool:
       tcp:
