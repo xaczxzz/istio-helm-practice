@@ -107,7 +107,7 @@ spec:
   # ============================================
   # Backend Service Routes (Direct - No API Gateway)
   # Frontend connects directly to backend services
-  # IMPORTANT: More specific routes (health checks) must come BEFORE prefix matches
+  # IMPORTANT: These MUST come BEFORE Grafana's catch-all routes
   # ============================================
   
   # Order Service - Health Check (exact match first!)
@@ -181,6 +181,23 @@ spec:
         host: app-stack-inventory-service.default.svc.cluster.local
         port:
           number: 3000
+  
+  # ============================================
+  # Grafana Static Resources (AFTER backend API routes)
+  # Grafana needs /login, /api, /public, etc. but NOT /api/orders, /api/users, /api/inventory
+  # ============================================
+  
+  # Grafana static resources and API calls (login, api, public, etc.)
+  # This catches Grafana's own /api/* calls (like /api/dashboards)
+  # Backend service routes above will catch /api/orders, /api/users, /api/inventory first
+  - match:
+    - uri:
+        regex: "^/(login|api|public|avatar|plugins).*"
+    route:
+    - destination:
+        host: monitoring-stack-grafana.monitoring.svc.cluster.local
+        port:
+          number: 80
   
   # ============================================
   # Frontend Routes (Default/Catch-all)
