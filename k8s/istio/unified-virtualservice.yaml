@@ -119,19 +119,7 @@ spec:
   # Frontend connects directly to backend services
   # ============================================
   
-  # Order Service - Health endpoint
-  - match:
-    - uri:
-        exact: /api/orders/health
-    rewrite:
-      uri: /health
-    route:
-    - destination:
-        host: app-stack-order-service
-        port:
-          number: 8080
-  
-  # Order Service - Main routes
+  # Order Service
   - match:
     - uri:
         prefix: /api/orders
@@ -143,19 +131,7 @@ spec:
         port:
           number: 8080
   
-  # User Service - Health endpoint
-  - match:
-    - uri:
-        exact: /api/users/health
-    rewrite:
-      uri: /health
-    route:
-    - destination:
-        host: app-stack-user-service
-        port:
-          number: 8000
-  
-  # User Service - Main routes
+  # User Service
   - match:
     - uri:
         prefix: /api/users
@@ -167,19 +143,7 @@ spec:
         port:
           number: 8000
   
-  # Inventory Service - Health endpoint
-  - match:
-    - uri:
-        exact: /api/inventory/health
-    rewrite:
-      uri: /health
-    route:
-    - destination:
-        host: app-stack-inventory-service
-        port:
-          number: 3000
-  
-  # Inventory Service - Main routes
+  # Inventory Service
   - match:
     - uri:
         prefix: /api/inventory
