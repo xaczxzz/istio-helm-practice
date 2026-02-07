@@ -81,16 +81,6 @@ spec:
       uri: /monitoring/grafana/
       redirectCode: 301
 
-  # Grafana static resources and API calls (login, api, public, etc.)
-  - match:
-    - uri:
-        regex: "^/(login|api|public|avatar|plugins).*"
-    route:
-    - destination:
-        host: monitoring-stack-grafana.monitoring.svc.cluster.local
-        port:
-          number: 80
-
   # Prometheus routes - handle both with and without trailing slash
   - match:
     - uri:
@@ -117,9 +107,10 @@ spec:
   # ============================================
   # Backend Service Routes (Direct - No API Gateway)
   # Frontend connects directly to backend services
+  # IMPORTANT: More specific routes (health checks) must come BEFORE prefix matches
   # ============================================
   
-  # Order Service - Health Check (exact match, no rewrite)
+  # Order Service - Health Check (exact match first!)
   - match:
     - uri:
         exact: /api/orders/health
@@ -127,7 +118,7 @@ spec:
       uri: /health
     route:
     - destination:
-        host: app-stack-order-service
+        host: app-stack-order-service.default.svc.cluster.local
         port:
           number: 8080
   
@@ -139,11 +130,11 @@ spec:
       uri: /orders
     route:
     - destination:
-        host: app-stack-order-service
+        host: app-stack-order-service.default.svc.cluster.local
         port:
           number: 8080
   
-  # User Service - Health Check (exact match, no rewrite)
+  # User Service - Health Check (exact match first!)
   - match:
     - uri:
         exact: /api/users/health
@@ -151,7 +142,7 @@ spec:
       uri: /health
     route:
     - destination:
-        host: app-stack-user-service
+        host: app-stack-user-service.default.svc.cluster.local
         port:
           number: 8000
   
@@ -163,11 +154,11 @@ spec:
       uri: /users
     route:
     - destination:
-        host: app-stack-user-service
+        host: app-stack-user-service.default.svc.cluster.local
         port:
           number: 8000
   
-  # Inventory Service - Health Check (exact match, no rewrite)
+  # Inventory Service - Health Check (exact match first!)
   - match:
     - uri:
         exact: /api/inventory/health
@@ -175,7 +166,7 @@ spec:
       uri: /health
     route:
     - destination:
-        host: app-stack-inventory-service
+        host: app-stack-inventory-service.default.svc.cluster.local
         port:
           number: 3000
   
@@ -187,7 +178,7 @@ spec:
       uri: /inventory
     route:
     - destination:
-        host: app-stack-inventory-service
+        host: app-stack-inventory-service.default.svc.cluster.local
         port:
           number: 3000
   
