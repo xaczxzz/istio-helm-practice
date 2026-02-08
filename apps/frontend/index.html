@@ -42,10 +42,14 @@
                 <h2>🔧 API Test</h2>
                 <div class="button-grid">
                     <button onclick="testAPI('/api/orders')" class="btn btn-secondary">Get Orders</button>
-                    <button onclick="createOrder()" class="btn btn-success">Create Order</button>
+                    <button onclick="createOrderWithValidation()" class="btn btn-success">Create Order (with Backend Communication)</button>
                     <button onclick="testAPI('/api/inventory')" class="btn btn-info">Check Inventory</button>
                     <button onclick="testAPI('/api/users')" class="btn btn-warning">Get Users</button>
                 </div>
+                <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                    💡 "Create Order" button demonstrates backend-to-backend communication:<br>
+                    Order Service → Inventory Service (check stock) → User Service (validate user)
+                </p>
             </div>
 
             <!-- Traffic Visualization -->
@@ -57,10 +61,17 @@
                         <div class="arrow">→</div>
                         <div class="node gateway-node">Istio Gateway</div>
                         <div class="arrow">→</div>
-                        <div class="node service-node">Services</div>
+                        <div class="node service-node">Order Service</div>
+                    </div>
+                    <div class="flow-item" style="margin-top: 10px; font-size: 0.9em;">
+                        <div class="node service-node" style="font-size: 0.85em;">Order Service</div>
+                        <div class="arrow">→</div>
+                        <div class="node service-node" style="font-size: 0.85em;">Inventory Service</div>
+                        <div class="arrow">→</div>
+                        <div class="node service-node" style="font-size: 0.85em;">User Service</div>
                     </div>
                     <div class="pod-routing" id="pod-routing">
-                        <p>Pod Routing: <span id="current-pod">-</span></p>
+                        <p>Current Pod: <span id="current-pod">-</span></p>
                     </div>
                 </div>
             </div>

@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -65,6 +68,24 @@ type CreateOrderRequest struct {
 	UserID    int `json:"user_id" binding:"required"`
 	ProductID int `json:"product_id" binding:"required"`
 	Quantity  int `json:"quantity" binding:"required,min=1"`
+}
+
+// Response structures for external services
+type InventoryCheckResponse struct {
+	Available         bool   `json:"available"`
+	ProductID         int    `json:"product_id"`
+	ProductName       string `json:"product_name"`
+	RequestedQuantity int    `json:"requested_quantity"`
+	AvailableQuantity int    `json:"available_quantity"`
+}
+
+type UserInfoResponse struct {
+	User struct {
+		ID       int    `json:"id"`
+		Username string `json:"username"`
+		Email    string `json:"email"`
+		FullName string `json:"full_name"`
+	} `json:"user"`
 }
 
 func init() {
@@ -279,12 +300,44 @@ func createOrderHandler(c *gin.Context) {
 		return
 	}
 
-	// Simulate some processing time
-	time.Sleep(time.Duration(50+rand.Intn(100)) * time.Millisecond)
+	// Step 1: Check inventory availability
+	log.Printf("Checking inventory for product %d, quantity %d", req.ProductID, req.Quantity)
+	inventoryAvailable, inventoryInfo, err := checkInventory(ctx, req.ProductID, req.Quantity)
+	if err != nil {
+		log.Printf("Failed to check inventory: %v", err)
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"error":   "Failed to check inventory",
+			"details": err.Error(),
+		})
+		return
+	}
 
+	if !inventoryAvailable {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":              "Insufficient inventory",
+			"product_id":         req.ProductID,
+			"requested_quantity": req.Quantity,
+			"available_quantity": inventoryInfo.AvailableQuantity,
+		})
+		return
+	}
+
+	// Step 2: Get user information
+	log.Printf("Fetching user information for user %d", req.UserID)
+	userInfo, err := getUserInfo(ctx, req.UserID)
+	if err != nil {
+		log.Printf("Failed to get user info: %v", err)
+		c.JSON(http.StatusServiceUnavailable, gin.H{
+			"error":   "Failed to get user information",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// Step 3: Create order in database
 	var orderID int
-	err := db.QueryRowContext(ctx,
-		"INSERT INTO orders (user_id, product_id, quantity, status) VALUES ($1, $2, $3, 'pending') RETURNING id",
+	err = db.QueryRowContext(ctx,
+		"INSERT INTO orders (user_id, product_id, quantity, status) VALUES ($1, $2, $3, 'confirmed') RETURNING id",
 		req.UserID, req.ProductID, req.Quantity).Scan(&orderID)
 	
 	if err != nil {
@@ -296,29 +349,101 @@ func createOrderHandler(c *gin.Context) {
 	// Increment orders created metric
 	ordersCreated.Inc()
 
-	// Simulate calling inventory service
-	go func() {
-		// This would normally call the inventory service
-		time.Sleep(100 * time.Millisecond)
-		log.Printf("Order %d: Inventory check completed", orderID)
-	}()
-
 	hostname, _ := os.Hostname()
 	order := Order{
 		ID:        orderID,
 		UserID:    req.UserID,
 		ProductID: req.ProductID,
 		Quantity:  req.Quantity,
-		Status:    "pending",
+		Status:    "confirmed",
 		CreatedAt: time.Now(),
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"order":    order,
-		"message":  "Order created successfully",
+		"message":  "Order created successfully with inventory and user validation",
 		"pod_name": hostname,
 		"version":  Version,
+		"inventory_check": gin.H{
+			"product_name":       inventoryInfo.ProductName,
+			"available_quantity": inventoryInfo.AvailableQuantity,
+		},
+		"user_info": gin.H{
+			"username": userInfo.User.Username,
+			"email":    userInfo.User.Email,
+			"fullname": userInfo.User.FullName,
+		},
 	})
+}
+
+// checkInventory calls inventory service to check product availability
+func checkInventory(ctx context.Context, productID, quantity int) (bool, *InventoryCheckResponse, error) {
+	inventoryServiceURL := getEnv("INVENTORY_SERVICE_URL", "http://app-stack-inventory-service:3000")
+	url := fmt.Sprintf("%s/inventory/check", inventoryServiceURL)
+
+	reqBody := map[string]int{
+		"product_id": productID,
+		"quantity":   quantity,
+	}
+	jsonData, _ := json.Marshal(reqBody)
+
+	req, err := http.NewRequestWithContext(ctx, "POST", url, nil)
+	if err != nil {
+		return false, nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Body = io.NopCloser(bytes.NewBuffer(jsonData))
+
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return false, nil, fmt.Errorf("inventory service unreachable: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return false, nil, fmt.Errorf("inventory service returned status %d", resp.StatusCode)
+	}
+
+	var inventoryResp InventoryCheckResponse
+	if err := json.NewDecoder(resp.Body).Decode(&inventoryResp); err != nil {
+		return false, nil, err
+	}
+
+	return inventoryResp.Available, &inventoryResp, nil
+}
+
+// getUserInfo calls user service to get user information
+func getUserInfo(ctx context.Context, userID int) (*UserInfoResponse, error) {
+	userServiceURL := getEnv("USER_SERVICE_URL", "http://app-stack-user-service:8000")
+	url := fmt.Sprintf("%s/users/%d", userServiceURL, userID)
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("user service unreachable: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("user service returned status %d", resp.StatusCode)
+	}
+
+	var userResp UserInfoResponse
+	if err := json.NewDecoder(resp.Body).Decode(&userResp); err != nil {
+		return nil, err
+	}
+
+	return &userResp, nil
 }
 
 func getEnv(key, defaultValue string) string {

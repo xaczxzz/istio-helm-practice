@@ -67,18 +67,19 @@ async function testAPI(endpoint) {
     }
 }
 
-// Create a new order
-async function createOrder() {
+// Create a new order with backend service communication
+async function createOrderWithValidation() {
     const orderData = {
-        user_id: Math.floor(Math.random() * 100) + 1,
-        product_id: Math.floor(Math.random() * 50) + 1,
-        quantity: Math.floor(Math.random() * 5) + 1
+        user_id: Math.floor(Math.random() * 5) + 1,  // Random user 1-5
+        product_id: Math.floor(Math.random() * 5) + 1,  // Random product 1-5
+        quantity: Math.floor(Math.random() * 3) + 1  // Random quantity 1-3
     };
     
     const startTime = Date.now();
     
     try {
-        addLogEntry(`🛒 Creating order: ${JSON.stringify(orderData)}`, 'info');
+        addLogEntry(`🔄 Creating order with backend validation...`, 'info');
+        addLogEntry(`📦 Order details: User ${orderData.user_id}, Product ${orderData.product_id}, Qty ${orderData.quantity}`, 'info');
         
         const response = await fetch('/api/orders', {
             method: 'POST',
@@ -101,11 +102,24 @@ async function createOrder() {
             currentPod = podName;
             document.getElementById('current-pod').textContent = podName;
             
-            addLogEntry(`✅ Order created - ${response.status} (${responseTime}ms) - Pod: ${podName}`, 'success');
-            addLogEntry(`📄 Order: ${JSON.stringify(data, null, 2)}`, 'data');
+            addLogEntry(`✅ Order created successfully (${responseTime}ms)`, 'success');
+            addLogEntry(`📊 Order ID: ${data.order.id}, Status: ${data.order.status}`, 'success');
+            
+            // Show backend service communication details
+            if (data.inventory_check) {
+                addLogEntry(`🔍 Inventory Service: ${data.inventory_check.product_name} - Available: ${data.inventory_check.available_quantity}`, 'info');
+            }
+            
+            if (data.user_info) {
+                addLogEntry(`👤 User Service: ${data.user_info.fullname} (${data.user_info.email})`, 'info');
+            }
+            
+            addLogEntry(`🎯 Backend Communication Flow: Order → Inventory → User`, 'data');
         } else {
             errorCount++;
+            const errorData = await response.json();
             addLogEntry(`❌ Order creation failed - ${response.status} (${responseTime}ms)`, 'error');
+            addLogEntry(`📄 Error: ${JSON.stringify(errorData, null, 2)}`, 'error');
         }
         
     } catch (error) {
@@ -118,6 +132,11 @@ async function createOrder() {
         
         addLogEntry(`💥 Order creation error (${responseTime}ms): ${error.message}`, 'error');
     }
+}
+
+// Create a new order (original function kept for compatibility)
+async function createOrder() {
+    createOrderWithValidation();
 }
 
 // Check service health
