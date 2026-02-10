@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
+	// "math/rand"
 	"net/http"
 	"os"
 	"strconv"
