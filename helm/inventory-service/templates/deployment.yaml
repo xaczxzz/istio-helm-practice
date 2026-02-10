@@ -15,6 +15,7 @@ spec:
     metadata:
       labels:
         {{- include "inventory-service.selectorLabels" . | nindent 8 }}
+        app: {{ include "inventory-service.name" . }}
         version: {{ .Values.image.tag | default .Chart.AppVersion }}
     spec:
       {{- if .Values.serviceAccount.name }}

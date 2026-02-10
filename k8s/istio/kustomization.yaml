@@ -18,6 +18,7 @@ resources:
   # Monitoring configurations
   - monitoring-destinationrules.yaml
   - monitoring-service-entries.yaml
+  - istio-podmonitor.yaml
 
 # Optional: Traffic policies (can be enabled as needed)
 # - circuit-breaker.yaml

@@ -1,0 +1,53 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: envoy-stats
+  namespace: monitoring
+  labels:
+    app: istio-proxy
+spec:
+  selector:
+    matchExpressions:
+    - key: security.istio.io/tlsMode
+      operator: Exists
+  namespaceSelector:
+    any: true
+  jobLabel: envoy-stats
+  podMetricsEndpoints:
+  - path: /stats/prometheus
+    port: http-envoy-prom
+    interval: 15s
+    relabelings:
+    - action: keep
+      sourceLabels: [__meta_kubernetes_pod_container_name]
+      regex: "istio-proxy"
+    - action: replace
+      sourceLabels: [__meta_kubernetes_namespace]
+      targetLabel: namespace
+    - action: replace
+      sourceLabels: [__meta_kubernetes_pod_name]
+      targetLabel: pod_name
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-proxy-metrics
+  namespace: monitoring
+  labels:
+    app: istio-proxy
+spec:
+  selector:
+    matchExpressions:
+    - key: security.istio.io/tlsMode
+      operator: Exists
+  namespaceSelector:
+    any: true
+  jobLabel: istio-proxy
+  podMetricsEndpoints:
+  - path: /stats/prometheus
+    targetPort: 15090
+    interval: 15s
+    relabelings:
+    - action: keep
+      sourceLabels: [__meta_kubernetes_pod_container_name]
+      regex: "istio-proxy"
