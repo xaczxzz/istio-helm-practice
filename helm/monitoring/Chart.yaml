@@ -11,6 +11,7 @@ dependencies:
     repository: https://jaegertracing.github.io/helm-charts
     condition: jaeger.enabled
   - name: kiali-server
+    alias: kiali
     version: 1.86.0
     repository: https://kiali.org/helm-charts
     condition: kiali.enabled
