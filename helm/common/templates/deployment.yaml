@@ -20,6 +20,7 @@ spec:
     metadata:
       labels:
         {{- include "common.selectorLabels" . | nindent 8 }}
+        app: {{ include "common.name" . }}
         version: {{ .Values.image.tag | default .Chart.AppVersion }}
     spec:
       {{- if .Values.serviceAccount.name }}
