@@ -18,17 +18,11 @@ spec:
   - match:
     - uri:
         prefix: /monitoring/kiali/
-    rewrite:
-      uri: /kiali/
     route:
     - destination:
         host: kiali.istio-system.svc.cluster.local
         port:
           number: 20001
-    headers:
-      request:
-        set:
-          X-Forwarded-Prefix: /monitoring/kiali
 
   - match:
     - uri:
@@ -36,16 +30,6 @@ spec:
     redirect:
       uri: /monitoring/kiali/
       redirectCode: 301
-
-  # Kiali static resources (CSS, JS, API calls from /kiali/ path)
-  - match:
-    - uri:
-        prefix: /kiali/
-    route:
-    - destination:
-        host: kiali.istio-system.svc.cluster.local
-        port:
-          number: 20001
 
   # Jaeger routes
   - match:
