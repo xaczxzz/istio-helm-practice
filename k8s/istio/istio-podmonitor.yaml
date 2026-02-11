@@ -15,9 +15,15 @@ spec:
   jobLabel: istio-proxy
   podMetricsEndpoints:
   - path: /stats/prometheus
-    targetPort: 15090
     interval: 15s
+    scheme: http
     relabelings:
-    - action: keep
-      sourceLabels: [__meta_kubernetes_pod_container_name]
+    - sourceLabels: [__meta_kubernetes_pod_container_name]
+      action: keep
       regex: "istio-proxy"
+    - sourceLabels: [__meta_kubernetes_pod_ip]
+      action: replace
+      targetLabel: __address__
+      regex: (.+)
+      replacement: $1:15020
+          dddd
