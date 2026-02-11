@@ -15,7 +15,7 @@ spec:
   jobLabel: istio-proxy
   podMetricsEndpoints:
   - path: /stats/prometheus
-    targetPort: 15020
+    targetPort: 15090
     interval: 15s
     relabelings:
     - action: keep
