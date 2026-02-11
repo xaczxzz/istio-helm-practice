@@ -26,4 +26,4 @@ spec:
       targetLabel: __address__
       regex: (.+)
       replacement: $1:15020
-          dddd
+          
